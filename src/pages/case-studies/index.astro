@@ -1,0 +1,51 @@
+---
+import BaseLayout from '@/layouts/BaseLayout.astro';
+import PageHero from '@/components/PageHero.astro';
+import Icon from '@/components/Icon.astro';
+import CaseStudyCard from '@/components/CaseStudyCard.astro';
+import CTABand from '@/components/CTABand.astro';
+import { getCaseStudies } from '@/lib/content';
+const items = await getCaseStudies();
+const industries = [...new Set(items.map((c) => c.data.industry))];
+---
+<BaseLayout title="Case Studies" description="Real electronics engineering and manufacturing projects delivered by Nanofab Innovations, from challenge and solution to result." noindex={items.length === 0}>
+  <PageHero eyebrow="Case Studies" title="Engineering in practice" lead="Selected projects: the challenge, what we built, and the results." crumbs={[{ label: 'Resources', href: '/resources' }, { label: 'Case Studies' }]} />
+  <section class="section">
+    <div class="container-x">
+      {items.length > 0 ? (
+        <>
+          {industries.length > 1 && (
+            <div class="mb-8 flex flex-wrap gap-2" id="cs-filters" role="group" aria-label="Filter by industry">
+              <button type="button" class="chip is-on" data-ind="all">All</button>
+              {industries.map((i) => <button type="button" class="chip" data-ind={i}>{i}</button>)}
+            </div>
+          )}
+          <div class="grid gap-6 md:grid-cols-2 lg:grid-cols-3">
+            {items.map((cs) => <div data-ind={cs.data.industry}><CaseStudyCard cs={cs} /></div>)}
+          </div>
+        </>
+      ) : (
+        <div class="mx-auto max-w-2xl text-center">
+          <span class="icon-tile mx-auto flex size-14"><Icon name="FolderOpen" class="size-7" /></span>
+          <h2 class="mt-6 text-2xl">Case studies are being prepared</h2>
+          <p class="mt-3 text-fg-muted">We're documenting recent projects across our industries. Meanwhile, we're happy to walk you through relevant work on a call.</p>
+          <a href="/contact" class="btn btn-primary mt-8">Talk to our engineers <Icon name="ArrowRight" class="size-4" /></a>
+        </div>
+      )}
+    </div>
+  </section>
+  <CTABand />
+</BaseLayout>
+<style>
+  .chip { cursor: pointer; }
+  .chip.is-on { background: var(--color-fg); color: var(--color-surface); border-color: var(--color-fg); }
+</style>
+<script>
+  const f = document.getElementById('cs-filters');
+  f?.addEventListener('click', (e) => {
+    const b = (e.target as HTMLElement).closest<HTMLButtonElement>('[data-ind]');
+    if (!b) return;
+    f.querySelectorAll('.chip').forEach((c) => c.classList.toggle('is-on', c === b));
+    document.querySelectorAll<HTMLElement>('div[data-ind]').forEach((el) => (el.hidden = b.dataset.ind !== 'all' && el.dataset.ind !== b.dataset.ind));
+  });
+</script>

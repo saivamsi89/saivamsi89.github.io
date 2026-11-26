@@ -1,0 +1,79 @@
+---
+import BaseLayout from '@/layouts/BaseLayout.astro';
+import PageHero from '@/components/PageHero.astro';
+import Icon from '@/components/Icon.astro';
+import CTABand from '@/components/CTABand.astro';
+import { industries } from '@/data/site';
+import { getCaseStudies } from '@/lib/content';
+
+const cs = await getCaseStudies();
+const count = (t: string) => cs.filter((c) => c.data.industry === t).length;
+// Which services each industry typically draws on (links into the Services page).
+const related: Record<string, [string, string][]> = {
+  'Industrial Automation': [['IoT & Automation', '/services#iot'], ['Embedded Systems', '/services#embedded']],
+  'Automotive Electronics': [['Embedded Systems', '/services#embedded'], ['PCB Design', '/services#pcb']],
+  'Agriculture & Smart Farming': [['IoT & Automation', '/services#iot'], ['Product Development', '/services#product']],
+  'Medical Electronics': [['Product Development', '/services#product'], ['PCB Design', '/services#pcb']],
+  Telecommunications: [['PCB Design', '/services#pcb'], ['Embedded Systems', '/services#embedded']],
+  Robotics: [['Embedded Systems', '/services#embedded'], ['PCB Assembly', '/services#pcb']],
+  'Consumer Electronics': [['Product Development', '/services#product'], ['PCB Assembly', '/services#pcb']],
+  'Energy & Infrastructure': [['Smart Lighting', '/infrastructure'], ['IoT & Automation', '/services#iot']],
+};
+const grads = ['bg-grad-deep', 'bg-grad-teal', 'bg-grad-ocean', 'bg-grad-showcase', 'bg-grad-night', 'bg-grad-teal', 'bg-grad-deep', 'bg-grad-ocean'];
+---
+<BaseLayout title="Industries" description="Electronic systems for industrial automation, automotive, agriculture, medical, telecommunications, robotics, consumer electronics, and energy and infrastructure.">
+  <PageHero
+    art="iot"
+    eyebrow="Industries"
+    title="Engineering Solutions Across Industries"
+    lead="We develop and support electronic systems for diverse industrial and commercial applications."
+    crumbs={[{ label: 'Industries' }]}
+  >
+    <div class="mt-9 flex flex-wrap gap-2">
+      {industries.map((ind, i) => (
+        <a href={`#ind-${i}`} class="inline-flex items-center gap-2 rounded-full border border-line bg-white/5 px-3.5 py-1.5 text-sm text-fg-body transition hover:border-signal-400 hover:text-fg">
+          <Icon name={ind.icon} class="size-4 text-accent" />{ind.title}
+        </a>
+      ))}
+    </div>
+  </PageHero>
+
+  <section class="section">
+    <div class="container-x grid gap-5 md:grid-cols-2">
+      {industries.map((ind, i) => (
+        <article id={`ind-${i}`} class:list={['trace on-dark group relative flex min-h-[19rem] scroll-mt-32 flex-col overflow-hidden rounded-panel p-8 sm:p-10', grads[i]]} data-reveal>
+          <div class="bg-grid absolute inset-0 opacity-30" aria-hidden="true"></div>
+          <Icon name={ind.icon} class="absolute -right-6 -bottom-8 size-56 text-white/[0.06] transition duration-500 group-hover:scale-110" strokeWidth={1} />
+          <div class="relative flex items-start justify-between gap-4">
+            <span class="icon-tile size-14"><Icon name={ind.icon} class="size-7" /></span>
+            <span class="font-mono text-xs text-fg-subtle">{String(i + 1).padStart(2, '0')} / {String(industries.length).padStart(2, '0')}</span>
+          </div>
+          <h2 class="relative mt-8 font-display text-2xl text-fg sm:text-3xl">{ind.title}</h2>
+          <p class="relative mt-3 max-w-md text-fg-muted">{ind.text}</p>
+          <div class="relative mt-auto flex flex-wrap items-center gap-2 pt-8">
+            <span class="mr-1 font-mono text-2xs tracking-[0.16em] text-fg-subtle uppercase">Services</span>
+            {related[ind.title]?.map(([label, href]) => (
+              <a href={href} class="rounded-full border border-line px-3 py-1 text-xs text-fg-body transition hover:border-signal-400 hover:text-fg">{label}</a>
+            ))}
+            {count(ind.title) > 0 && (
+              <a href="/case-studies" class="ml-auto inline-flex items-center gap-1 text-sm font-semibold text-accent">{count(ind.title)} case {count(ind.title) === 1 ? 'study' : 'studies'} <Icon name="ArrowRight" class="size-4" /></a>
+            )}
+          </div>
+        </article>
+      ))}
+    </div>
+
+    <div class="container-x mt-10">
+      <div class="flex flex-col items-start gap-5 rounded-panel border border-line bg-surface-2 p-8 sm:flex-row sm:items-center" data-reveal>
+        <span class="icon-tile size-12"><Icon name="Compass" class="size-6" /></span>
+        <div class="flex-1">
+          <h2 class="font-display text-xl">Don&rsquo;t see your industry?</h2>
+          <p class="mt-1 text-fg-muted">Our engineering process works for any application that needs reliable electronics. Tell us what you&rsquo;re building.</p>
+        </div>
+        <a href="/contact" class="btn btn-primary shrink-0">Talk to an Engineer <Icon name="ArrowRight" class="size-4" /></a>
+      </div>
+    </div>
+  </section>
+
+  <CTABand title="Building for a specific industry?" text="Tell us about your application and requirements. Our engineers will help you define the right hardware, firmware and manufacturing approach." />
+</BaseLayout>

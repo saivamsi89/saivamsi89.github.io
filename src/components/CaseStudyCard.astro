@@ -1,0 +1,27 @@
+---
+import { Image } from 'astro:assets';
+import Icon from './Icon.astro';
+import type { CollectionEntry } from 'astro:content';
+interface Props { cs: CollectionEntry<'caseStudies'> }
+const { cs } = Astro.props;
+const d = cs.data;
+---
+<a href={`/case-studies/${cs.id}`} class="card card-hover group flex flex-col overflow-hidden p-0" data-reveal>
+  <div class="on-dark relative aspect-[16/9] overflow-hidden bg-ink-900">
+    {d.cover
+      ? <Image src={d.cover} alt="" widths={[480, 800]} sizes="(min-width: 1024px) 33vw, 100vw" class="size-full object-cover transition duration-500 group-hover:scale-105" />
+      : <div class="bg-grid flex size-full items-center justify-center text-signal-400/40"><Icon name="CircuitBoard" class="size-16" strokeWidth={1} /></div>}
+    {d.draft && <span class="absolute top-3 left-3 rounded bg-copper-500 px-2 py-0.5 font-mono text-[0.65rem] text-white">DRAFT</span>}
+  </div>
+  <div class="flex flex-1 flex-col p-6">
+    <p class="font-mono text-xs uppercase tracking-wider text-accent">{d.industry}</p>
+    <h3 class="mt-2 text-lg">{d.title}</h3>
+    <p class="mt-2 text-sm text-fg-muted">{d.summary}</p>
+    {d.metrics.length > 0 && (
+      <dl class="mt-5 grid grid-cols-2 gap-3 border-t border-line pt-4">
+        {d.metrics.slice(0, 2).map((m) => <div><dd class="text-xl font-semibold text-fg">{m.value}</dd><dt class="text-xs text-fg-subtle">{m.label}</dt></div>)}
+      </dl>
+    )}
+    <span class="mt-auto inline-flex items-center gap-1 pt-5 text-sm font-semibold text-accent">Read case study <Icon name="ArrowRight" class="size-4 transition group-hover:translate-x-1" /></span>
+  </div>
+</a>

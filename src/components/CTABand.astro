@@ -1,0 +1,29 @@
+---
+import Icon from './Icon.astro';
+interface Props { title?: string; text?: string; primary?: { label: string; href: string }; secondary?: { label: string; href: string } }
+const {
+  title = 'Let’s build something innovative together.',
+  text = 'Have a product idea, an engineering challenge or a manufacturing requirement? Our team is ready to understand your requirements.',
+  primary = { label: 'Start Your Project', href: '/contact' },
+  secondary = { label: 'Upload Your BOM', href: '/resources/bom-upload' },
+} = Astro.props;
+---
+<section class="section">
+  <div class="container-x">
+    <div class="on-dark relative overflow-hidden rounded-panel bg-ink-900 px-6 py-14 sm:px-14" data-reveal>
+      <div class="bg-grid absolute inset-0 opacity-60" aria-hidden="true"></div>
+      <div class="absolute -right-20 -bottom-24 size-80 rounded-full bg-copper-500/20 soft-glow" aria-hidden="true"></div>
+      <div class="absolute -top-24 -left-10 size-72 rounded-full bg-signal-500/20 soft-glow" aria-hidden="true"></div>
+      <div class="relative flex flex-col items-start gap-8 lg:flex-row lg:items-center lg:justify-between">
+        <div class="max-w-2xl">
+          <h2 class="h-section text-white">{title}</h2>
+          <p class="lead mt-4">{text}</p>
+        </div>
+        <div class="flex flex-wrap gap-3">
+          <a href={primary.href} class="btn btn-primary">{primary.label}<Icon name="ArrowRight" class="size-4" /></a>
+          <a href={secondary.href} class="btn btn-outline">{secondary.label}</a>
+        </div>
+      </div>
+    </div>
+  </div>
+</section>

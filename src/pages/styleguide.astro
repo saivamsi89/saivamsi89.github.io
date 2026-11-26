@@ -1,0 +1,108 @@
+---
+// Living style guide: the design system as it actually renders. Not linked, not indexed.
+import BaseLayout from '@/layouts/BaseLayout.astro';
+import PageHero from '@/components/PageHero.astro';
+import Icon from '@/components/Icon.astro';
+import SectionHeader from '@/components/SectionHeader.astro';
+
+const roles = [
+  ['surface', 'Page background, cards'], ['surface-2', 'Alternate bands, insets'], ['fg', 'Headings, strong text'], ['fg-body', 'Body copy'],
+  ['fg-muted', 'Secondary text'], ['fg-subtle', 'Captions, meta'], ['fg-faint', 'Decorative only'], ['line', 'Borders, dividers'],
+  ['line-strong', 'Form borders, outline buttons'], ['accent', 'Links, eyebrows'], ['accent-strong', 'Link hover'], ['accent-2', 'Copper labels, step numbers'],
+];
+const brand = [
+  ['ink-950', '#050c18'], ['ink-900', '#0a1628'], ['ink-800', '#11223b'], ['signal-300', '#67e8f9'], ['signal-400', '#22d3ee'], ['signal-500', '#06b6d4'],
+  ['copper-300', '#fbbf8a'], ['copper-400', '#f59e5b'], ['copper-500', '#e07b39'],
+];
+const gradients = ['hero', 'showcase', 'deep', 'ocean', 'teal', 'night', 'mission', 'vision'];
+const radii = [['control', 'Buttons, inputs'], ['card', 'Cards, menus'], ['panel', 'Feature panels, banners'], ['full', 'Pills, chips, avatars']];
+---
+<BaseLayout title="Style Guide" description="Nanofab design system: tokens and components." noindex>
+  <PageHero eyebrow="Design system" title="Nanofab Style Guide" lead="Tokens and components as they render. Use role-based tokens, not raw colours: they adapt to light mode, dark mode and dark sections automatically." />
+
+  <section class="section">
+    <div class="container-x space-y-20">
+      <div>
+        <SectionHeader eyebrow="Colour · semantic roles" title="Use these in markup" lead="Each role has a light value, a dark-theme value and a dark-section value. Switch the theme in the header to see them change." />
+        <div class="mt-8 grid gap-4 sm:grid-cols-2 lg:grid-cols-4">
+          {roles.map(([r, use]) => (
+            <div class="card p-0 overflow-hidden">
+              <div class="h-16 border-b border-line" style={`background: var(--color-${r})`}></div>
+              <div class="p-4"><p class="font-mono text-sm text-fg">{r}</p><p class="text-xs text-fg-subtle">{use}</p></div>
+            </div>
+          ))}
+        </div>
+      </div>
+
+      <div>
+        <SectionHeader eyebrow="Colour · brand palette" title="Fixed brand colours" lead="Same in every theme. Use for brand surfaces, accents on dark backgrounds and illustrations." />
+        <div class="mt-8 grid grid-cols-3 gap-3 sm:grid-cols-9">
+          {brand.map(([n, hex]) => (
+            <div><div class="aspect-square rounded-card ring-1 ring-line" style={`background: var(--color-${n})`}></div><p class="mt-2 font-mono text-2xs text-fg-muted">{n}<br />{hex}</p></div>
+          ))}
+        </div>
+      </div>
+
+      <div>
+        <SectionHeader eyebrow="Gradients" title="Named brand gradients" lead="bg-grad-* utilities (or var(--grad-*) in slide data). Never paste gradient values into pages." />
+        <div class="mt-8 grid grid-cols-2 gap-4 sm:grid-cols-4">
+          {gradients.map((g) => <div class="on-dark flex h-28 items-end rounded-panel p-4" style={`background: var(--grad-${g})`}><span class="font-mono text-xs text-fg">bg-grad-{g}</span></div>)}
+        </div>
+      </div>
+
+      <div>
+        <SectionHeader eyebrow="Typography" title="Type scale" />
+        <div class="mt-8 space-y-6 border-l border-line pl-6">
+          <p class="h-mega">Mega</p>
+          <p class="h-display font-display font-semibold text-fg">Display: page titles</p>
+          <p class="h-section font-display font-semibold text-fg">Section: section headings</p>
+          <p class="lead">Lead: introductory paragraphs and supporting copy.</p>
+          <p class="text-fg-body">Body: Inter, comfortable reading size for paragraphs.</p>
+          <p class="eyebrow">Eyebrow label</p>
+          <p class="font-mono text-2xs tracking-[0.18em] text-fg-subtle uppercase">text-2xs mono · UI chrome</p>
+        </div>
+      </div>
+
+      <div>
+        <SectionHeader eyebrow="Buttons" title="Variants and sizes" lead="Combine a variant with an optional size/shape. Never use !important overrides." />
+        <div class="mt-8 flex flex-wrap items-center gap-3">
+          <a class="btn btn-primary" href="#">btn-primary</a>
+          <a class="btn btn-outline" href="#">btn-outline</a>
+          <a class="btn btn-copper" href="#">btn-copper</a>
+          <a class="btn btn-ghost" href="#">btn-ghost <Icon name="ArrowRight" class="size-4" /></a>
+          <a class="btn btn-primary btn-sm" href="#">btn-sm</a>
+          <a class="btn btn-primary btn-lg btn-pill" href="#">btn-lg btn-pill</a>
+        </div>
+        <div class="on-dark mt-6 flex flex-wrap items-center gap-3 rounded-panel bg-ink-900 p-6">
+          <a class="btn btn-primary" href="#">On dark</a><a class="btn btn-outline" href="#">btn-outline</a><a class="btn btn-ghost" href="#">btn-ghost</a>
+        </div>
+      </div>
+
+      <div>
+        <SectionHeader eyebrow="Shape" title="Radii" />
+        <div class="mt-8 grid grid-cols-2 gap-4 sm:grid-cols-4">
+          {radii.map(([r, use]) => <div><div class={`h-24 border border-line bg-surface-2 rounded-${r}`}></div><p class="mt-2 font-mono text-sm text-fg">rounded-{r}</p><p class="text-xs text-fg-subtle">{use}</p></div>)}
+        </div>
+      </div>
+
+      <div>
+        <SectionHeader eyebrow="Components" title="Building blocks" />
+        <div class="mt-8 grid gap-6 lg:grid-cols-3">
+          <div class="card card-hover trace"><span class="icon-tile"><Icon name="Cpu" class="size-5" /></span><h3 class="mt-4 text-lg">card + card-hover + trace</h3><p class="mt-1 text-sm text-fg-muted">Standard content card with hover lift and glowing edge.</p></div>
+          <div class="card space-y-3"><div class="flex flex-wrap gap-2"><span class="chip">chip</span><span class="chip">PCB</span><span class="chip">IoT</span></div><label class="field-label" for="sg-field">field-label</label><input id="sg-field" class="field" placeholder="field" /></div>
+          <div class="on-dark rounded-panel bg-ink-900 p-6"><span class="icon-tile"><Icon name="Zap" class="size-5" /></span><h3 class="mt-4 text-lg text-fg">Dark section (.on-dark)</h3><p class="mt-1 text-sm text-fg-muted">The same token classes, automatically light-on-dark.</p></div>
+        </div>
+      </div>
+
+      <div class="card bg-surface-2">
+        <h3 class="text-lg">Rules</h3>
+        <ul class="prose-nf mt-2">
+          <li>Text, surfaces and lines: semantic tokens only (<code>text-fg-muted</code>, <code>bg-surface-2</code>, <code>border-line</code>).</li>
+          <li>Wrap anything that is dark by design in <code>.on-dark</code>; never hand-pick light text colours for it.</li>
+          <li>Backgrounds with gradients: <code>bg-grad-*</code>. Raw hex colours are only allowed in illustration files (enforced by a test).</li>
+          <li>Every animation needs a reduced-motion fallback; every interactive element a visible focus state.</li>
+        </ul>
+      </div>
+    </div>
+  </section>
+</BaseLayout>

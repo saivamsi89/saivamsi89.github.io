@@ -1,0 +1,60 @@
+---
+import { render } from 'astro:content';
+import { Image } from 'astro:assets';
+import BaseLayout from '@/layouts/BaseLayout.astro';
+import PageHero from '@/components/PageHero.astro';
+import Icon from '@/components/Icon.astro';
+import CTABand from '@/components/CTABand.astro';
+import { getTeam } from '@/lib/content';
+import { leadershipRoles } from '@/data/site';
+
+const members = await getTeam();
+const rendered = await Promise.all(members.map(async (m) => ({ ...m, Content: (await render(m)).Content })));
+// Each leadership role shows the matching profile, or a placeholder until one is added.
+const filledRoles = new Set(members.map((m) => m.data.role));
+const placeholders = leadershipRoles.filter((r) => !filledRoles.has(r));
+const initials = (name: string) => name.split(/\s+/).map((w) => w[0]).slice(0, 2).join('').toUpperCase();
+---
+<BaseLayout title="Management Team" description="Meet the leadership team behind Nanofab Innovations." noindex={members.length === 0}>
+  <PageHero eyebrow="Management Team" title="Leadership Driving Innovation" lead="Meet the people behind Nanofab Innovations." crumbs={[{ label: 'Management Team' }]} />
+
+  <section class="section">
+    <div class="container-x grid gap-6 sm:grid-cols-2 lg:grid-cols-3">
+      {rendered.map((m) => (
+        <article class="card flex flex-col p-0" data-reveal>
+          <div class="relative aspect-[4/3] overflow-hidden rounded-t-card bg-surface-2">
+            {m.data.photo ? (
+              <Image src={m.data.photo} alt={`Photo of ${m.data.name}`} widths={[400, 700]} sizes="(min-width: 1024px) 33vw, 100vw" class="size-full object-cover object-top" />
+            ) : (
+              <div class="bg-grid-light flex size-full items-center justify-center"><span class="text-5xl font-semibold text-fg-faint">{initials(m.data.name)}</span></div>
+            )}
+            {m.data.draft && <span class="absolute top-3 left-3 rounded bg-copper-500 px-2 py-0.5 font-mono text-[0.65rem] text-white">DRAFT</span>}
+          </div>
+          <div class="flex flex-1 flex-col p-6">
+            <h2 class="text-xl">{m.data.name}</h2>
+            <p class="mt-1 font-mono text-xs uppercase tracking-wider text-accent">{m.data.role}</p>
+            <div class="mt-4 text-sm leading-relaxed text-fg-muted"><m.Content /></div>
+            {m.data.linkedin && (
+              <a href={m.data.linkedin} target="_blank" rel="noopener" class="mt-auto inline-flex items-center gap-2 pt-5 text-sm font-semibold text-accent hover:text-accent-strong">
+                <Icon name="Linkedin" class="size-4" />LinkedIn profile
+              </a>
+            )}
+          </div>
+        </article>
+      ))}
+      {placeholders.map((role) => (
+        <article class="card flex flex-col border-dashed p-0" data-reveal>
+          <div class="bg-grid-light flex aspect-[4/3] items-center justify-center rounded-t-card bg-surface-2 text-fg-faint">
+            <Icon name="UserRound" class="size-16" strokeWidth={1.25} />
+          </div>
+          <div class="p-6">
+            <p class="font-mono text-xs uppercase tracking-wider text-accent">{role}</p>
+            <p class="mt-2 text-sm text-fg-subtle">Profile coming soon.</p>
+          </div>
+        </article>
+      ))}
+    </div>
+  </section>
+
+  <CTABand title="Want to work with our team?" text="Whether it's a partnership, a project or a career in electronics engineering, we'd like to hear from you." secondary={{ label: 'About Nanofab', href: '/about' }} />
+</BaseLayout>

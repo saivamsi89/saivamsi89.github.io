@@ -1,0 +1,28 @@
+---
+import { render } from 'astro:content';
+import BaseLayout from '@/layouts/BaseLayout.astro';
+import PageHero from '@/components/PageHero.astro';
+import CTABand from '@/components/CTABand.astro';
+import Icon from '@/components/Icon.astro';
+import { getPosts, formatDate } from '@/lib/content';
+
+export async function getStaticPaths() {
+  return (await getPosts()).map((p) => ({ params: { slug: p.id }, props: { post: p } }));
+}
+const { post } = Astro.props;
+const { Content } = await render(post);
+---
+<BaseLayout title={post.data.title} description={post.data.description} noindex={post.data.draft}>
+  <PageHero eyebrow={post.data.tags.join(' · ') || 'Engineering Blog'} title={post.data.title} crumbs={[{ label: 'Resources', href: '/resources' }, { label: 'Blog', href: '/resources/blog' }, { label: 'Article' }]}>
+    <p class="mt-6 font-mono text-sm text-fg-subtle">{formatDate(post.data.date)} · {post.data.author}</p>
+  </PageHero>
+  <article class="section">
+    <div class="container-x">
+      <div class="prose-nf mx-auto"><Content /></div>
+      <div class="mx-auto mt-12 max-w-3xl border-t border-line pt-6">
+        <a href="/resources/blog" class="btn btn-ghost"><Icon name="ArrowLeft" class="size-4" />All articles</a>
+      </div>
+    </div>
+  </article>
+  <CTABand />
+</BaseLayout>

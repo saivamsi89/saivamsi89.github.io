@@ -1,0 +1,133 @@
+---
+import BaseLayout from '@/layouts/BaseLayout.astro';
+import PageHero from '@/components/PageHero.astro';
+import Icon from '@/components/Icon.astro';
+import CTABand from '@/components/CTABand.astro';
+import Gallery from '@/components/Gallery.astro';
+import Credentials from '@/components/Credentials.astro';
+import TrustBand from '@/components/TrustBand.astro';
+import { audiences } from '@/data/site';
+import { getTeam } from '@/lib/content';
+
+const hasTeam = (await getTeam()).length > 0;
+const expertise = [
+  { icon: 'CircuitBoard', label: 'PCB Engineering', href: '/services#pcb' },
+  { icon: 'Factory', label: 'Electronics Manufacturing', href: '/capabilities' },
+  { icon: 'Cpu', label: 'Embedded Systems', href: '/services#embedded' },
+  { icon: 'Wifi', label: 'IoT', href: '/services#iot' },
+  { icon: 'Bot', label: 'Intelligent Automation', href: '/services#iot' },
+];
+const approach = [
+  { icon: 'PenTool', title: 'Thoughtful design' },
+  { icon: 'Crosshair', title: 'Engineering precision' },
+  { icon: 'Factory', title: 'Reliable manufacturing' },
+  { icon: 'Sparkles', title: 'Continuous innovation' },
+];
+---
+<BaseLayout title="About Us" description="Nanofab Innovations Pvt. Ltd. is an electronics engineering and technology company developing innovative, reliable and scalable solutions.">
+  <PageHero
+    art="showcase"
+    eyebrow="About Us"
+    title="Building Technology Through Engineering Innovation"
+    lead="Nanofab Innovations Pvt. Ltd. is an electronics engineering and technology company committed to developing innovative, reliable and scalable solutions."
+    crumbs={[{ label: 'About Us' }]}
+  />
+
+  <TrustBand />
+
+  <!-- Who we are -->
+  <section class="section">
+    <div class="container-x grid gap-12 lg:grid-cols-12">
+      <div class="lg:col-span-7" data-reveal>
+        <p class="eyebrow">Who we are</p>
+        <p class="mt-6 font-display text-3xl leading-[1.15] font-medium tracking-[-0.03em] text-fg sm:text-4xl lg:text-[2.9rem]">
+          We work with businesses, startups, engineers and innovators to <span class="text-accent">simplify complex technical challenges</span> and accelerate product development.
+        </p>
+      </div>
+      <div class="lg:col-span-5" data-reveal>
+        <p class="font-mono text-xs tracking-[0.18em] text-fg-subtle uppercase">Our expertise spans</p>
+        <ul class="mt-4 divide-y divide-line border-y border-line">
+          {expertise.map((e) => (
+            <li>
+              <a href={e.href} class="group flex items-center gap-4 py-4">
+                <span class="icon-tile size-10"><Icon name={e.icon} class="size-5" /></span>
+                <span class="flex-1 font-display text-lg text-fg">{e.label}</span>
+                <Icon name="ArrowUpRight" class="size-4 text-fg-subtle transition group-hover:text-accent-strong" />
+              </a>
+            </li>
+          ))}
+        </ul>
+      </div>
+    </div>
+  </section>
+
+  <!-- Mission & Vision -->
+  <section class="section bg-surface-2">
+    <div class="container-x grid gap-6 lg:grid-cols-2">
+      <article class="on-dark bg-grad-mission relative overflow-hidden rounded-panel p-8 sm:p-12" data-reveal>
+        <Icon name="Target" class="absolute -right-8 -bottom-8 size-56 text-white/[0.05]" strokeWidth={1} />
+        <span class="icon-tile size-12"><Icon name="Target" class="size-6" /></span>
+        <p class="eyebrow mt-8">Our Mission</p>
+        <p class="relative mt-4 font-display text-2xl leading-snug text-white sm:text-[1.75rem]">
+          To make electronics engineering and product manufacturing more accessible, efficient and reliable by delivering integrated engineering solutions.
+        </p>
+      </article>
+      <article class="on-dark bg-grad-vision relative overflow-hidden rounded-panel p-8 sm:p-12" data-reveal>
+        <Icon name="Eye" class="absolute -right-8 -bottom-8 size-56 text-white/[0.05]" strokeWidth={1} />
+        <span class="inline-flex size-12 items-center justify-center rounded-xl bg-copper-400/10 text-copper-300 ring-1 ring-copper-400/30"><Icon name="Eye" class="size-6" /></span>
+        <p class="mt-8 inline-flex items-center gap-2 font-mono text-xs font-medium tracking-[0.18em] text-copper-300 uppercase"><span class="h-px w-6 bg-current"></span>Our Vision</p>
+        <p class="relative mt-4 font-display text-2xl leading-snug text-white sm:text-[1.75rem]">
+          To become a trusted global engineering and manufacturing partner, enabling businesses and innovators to develop next-generation electronic products.
+        </p>
+      </article>
+    </div>
+  </section>
+
+  <!-- Approach -->
+  <section class="section">
+    <div class="container-x">
+      <div class="mx-auto max-w-3xl text-center" data-reveal>
+        <p class="eyebrow">Our Approach</p>
+        <h2 class="h-section mt-3">How successful products are built</h2>
+        <p class="lead mt-4">We believe successful products are built through the integration of thoughtful design, engineering precision, reliable manufacturing and continuous innovation.</p>
+      </div>
+      <ol class="relative mt-16 grid gap-10 sm:grid-cols-2 lg:grid-cols-4 lg:gap-6">
+        <div class="absolute top-7 right-[12%] left-[12%] hidden h-px bg-gradient-to-r from-signal-500/0 via-signal-500/60 to-signal-500/0 lg:block" aria-hidden="true"></div>
+        {approach.map((a, i) => (
+          <li class="relative text-center" data-reveal>
+            <span class="relative mx-auto flex size-14 items-center justify-center rounded-full bg-ink-900 text-signal-400 ring-8 ring-surface"><Icon name={a.icon} class="size-6" /></span>
+            <p class="mt-5 font-mono text-xs text-accent-2">{String(i + 1).padStart(2, '0')}</p>
+            <h3 class="mt-1 font-display text-xl">{a.title}</h3>
+          </li>
+        ))}
+      </ol>
+    </div>
+  </section>
+
+  <!-- Who we work with -->
+  <section class="section on-dark relative overflow-hidden bg-ink-900" data-spotlight>
+    <div class="bg-grid absolute inset-0 opacity-40" aria-hidden="true"></div>
+    <div class="container-x relative">
+      <div class="flex flex-col justify-between gap-6 md:flex-row md:items-end">
+        <div class="max-w-2xl" data-reveal>
+          <p class="eyebrow">Who we work with</p>
+          <h2 class="h-section mt-3 text-white">An engineering partner for every stage of growth</h2>
+        </div>
+        {hasTeam && <a href="/team" class="btn btn-outline shrink-0">Meet our leadership <Icon name="ArrowRight" class="size-4" /></a>}
+      </div>
+      <div class="mt-12 grid gap-4 md:grid-cols-3">
+        {audiences.map((a) => (
+          <div class="trace rounded-card border border-white/10 bg-white/[0.03] p-7" data-reveal>
+            <span class="icon-tile size-12"><Icon name={a.icon} class="size-6" /></span>
+            <h3 class="mt-6 font-display text-xl text-white">{a.title}</h3>
+            <p class="mt-2 text-fg-muted">{a.text}</p>
+          </div>
+        ))}
+      </div>
+    </div>
+  </section>
+
+  <Gallery lead="Our facility, our equipment and the people who build with you." />
+  <Credentials />
+  <CTABand />
+</BaseLayout>

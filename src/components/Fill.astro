@@ -1,0 +1,6 @@
+---
+// Renders a legal/company value, or a highlighted placeholder if it is missing.
+interface Props { value?: string | null; label: string }
+const { value, label } = Astro.props;
+---
+{value ? <Fragment>{value}</Fragment> : <mark class="rounded bg-amber-100 px-1 text-amber-900 not-italic">[{label}, to be added]</mark>}

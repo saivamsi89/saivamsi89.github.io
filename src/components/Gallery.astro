@@ -1,0 +1,45 @@
+---
+// Facility photo gallery with a lightweight <dialog> lightbox. Hidden when there are no photos.
+import { Image } from 'astro:assets';
+import Icon from './Icon.astro';
+import SectionHeader from './SectionHeader.astro';
+import { facilityPhotos } from '@/lib/assets';
+interface Props { eyebrow?: string; title?: string; lead?: string; limit?: number }
+const { eyebrow = 'Inside Nanofab', title = 'Where engineering meets manufacturing', lead, limit } = Astro.props;
+const photos = limit ? facilityPhotos.slice(0, limit) : facilityPhotos;
+---
+{photos.length > 0 && (
+  <section class="section">
+    <div class="container-x">
+      <SectionHeader eyebrow={eyebrow} title={title} lead={lead} />
+      <ul class="gallery mt-10 grid auto-rows-[180px] grid-cols-2 gap-3 md:auto-rows-[220px] md:grid-cols-4">
+        {photos.map((p, i) => (
+          <li class:list={[i % 5 === 0 && 'col-span-2 row-span-2']}>
+            <button type="button" class="group relative block size-full overflow-hidden rounded-xl bg-surface-2" data-full={p.src.src} data-caption={p.caption} aria-label={`Enlarge photo: ${p.caption}`}>
+              <Image src={p.src} alt={p.caption} widths={[400, 800, 1200]} sizes="(min-width: 768px) 50vw, 100vw" class="size-full object-cover transition duration-500 group-hover:scale-105" />
+              <span class="absolute inset-x-0 bottom-0 bg-gradient-to-t from-ink-950/80 to-transparent p-3 text-left text-xs font-medium text-white opacity-0 transition group-hover:opacity-100 group-focus-visible:opacity-100">{p.caption}</span>
+            </button>
+          </li>
+        ))}
+      </ul>
+    </div>
+    <dialog id="lightbox" class="m-auto max-h-[90vh] max-w-[92vw] rounded-card bg-ink-950 p-0 backdrop:bg-ink-950/85">
+      <form method="dialog" class="absolute top-3 right-3"><button class="rounded-full bg-white/10 p-2 text-white hover:bg-white/20" aria-label="Close"><Icon name="X" class="size-5" /></button></form>
+      <img alt="" class="max-h-[82vh] w-auto" />
+      <p class="px-4 py-3 text-sm text-fg-muted"></p>
+    </dialog>
+  </section>
+)}
+<script>
+  const dlg = document.getElementById('lightbox') as HTMLDialogElement | null;
+  document.querySelectorAll<HTMLButtonElement>('.gallery button').forEach((b) =>
+    b.addEventListener('click', () => {
+      if (!dlg) return;
+      const img = dlg.querySelector('img')!;
+      img.src = b.dataset.full!; img.alt = b.dataset.caption!;
+      dlg.querySelector('p')!.textContent = b.dataset.caption!;
+      dlg.showModal();
+    }),
+  );
+  dlg?.addEventListener('click', (e) => { if (e.target === dlg) dlg.close(); });
+</script>

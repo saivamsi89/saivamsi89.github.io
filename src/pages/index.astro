@@ -1,0 +1,48 @@
+---
+// Home: one story, in order. Banner → who we are → what we do → how we work →
+// see it → proof (appears when real data exists) → industries → insights → start a project.
+import BaseLayout from '@/layouts/BaseLayout.astro';
+import SectionHeader from '@/components/SectionHeader.astro';
+import TrustBand from '@/components/TrustBand.astro';
+import Credentials from '@/components/Credentials.astro';
+import Gallery from '@/components/Gallery.astro';
+import CaseStudyCard from '@/components/CaseStudyCard.astro';
+import HeroCarousel from '@/components/home/HeroCarousel.astro';
+import ValueTiles from '@/components/home/ValueTiles.astro';
+import Statement from '@/components/home/Statement.astro';
+import Bento from '@/components/home/Bento.astro';
+import ScrollStory from '@/components/home/ScrollStory.astro';
+import Showreel from '@/components/home/Showreel.astro';
+import IndustryPanels from '@/components/home/IndustryPanels.astro';
+import LatestPosts from '@/components/home/LatestPosts.astro';
+import HowToOrder from '@/components/home/HowToOrder.astro';
+import { getCaseStudies } from '@/lib/content';
+const caseStudies = (await getCaseStudies()).slice(0, 3);
+---
+<BaseLayout>
+  <HeroCarousel />
+  <ValueTiles />
+  <TrustBand />
+  <Statement />
+  <Bento />
+  <ScrollStory />
+  <Showreel />
+
+  {caseStudies.length > 0 && (
+    <section class="section bg-surface-2">
+      <div class="container-x">
+        <div class="flex flex-col justify-between gap-6 md:flex-row md:items-end">
+          <SectionHeader eyebrow="Case Studies" title="Engineering in practice" lead="Real projects, from challenge to result." />
+          <a href="/case-studies" class="btn btn-outline shrink-0">All case studies</a>
+        </div>
+        <div class="mt-10 grid gap-6 md:grid-cols-2 lg:grid-cols-3">{caseStudies.map((cs) => <CaseStudyCard cs={cs} />)}</div>
+      </div>
+    </section>
+  )}
+  <Gallery limit={5} />
+  <Credentials />
+
+  <IndustryPanels />
+  <LatestPosts />
+  <HowToOrder />
+</BaseLayout>

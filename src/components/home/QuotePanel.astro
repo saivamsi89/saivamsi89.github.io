@@ -1,0 +1,154 @@
+---
+// Instant-quote request panel. It does not calculate prices; it turns the
+// visitor's specs into a pre-filled request on the Contact or BOM upload form.
+import Icon from '../Icon.astro';
+import { quoteOptions as Q } from '@/data/home';
+
+const tabs = [
+  { id: 'pcb', label: 'PCB', icon: 'Layers' },
+  { id: 'assembly', label: 'Assembly', icon: 'Cpu' },
+  { id: 'stencil', label: 'Stencil', icon: 'Grid3x3' },
+  { id: 'engineering', label: 'Engineering', icon: 'Wrench' },
+];
+const sel = 'field field-sm';
+---
+<div id="quote" class="quote scroll-mt-28 rounded-panel border border-white/10 bg-ink-950/80 p-5 shadow-2xl shadow-black/50 backdrop-blur-md sm:p-6">
+  <div class="flex items-center justify-between">
+    <p class="font-display text-lg font-semibold text-white">Instant quote request</p>
+    <span class="inline-flex items-center gap-1.5 font-mono text-[0.65rem] tracking-wider text-emerald-300 uppercase"><span class="size-1.5 rounded-full bg-emerald-400"></span>Engineer reviewed</span>
+  </div>
+
+  <div class="mt-4 grid grid-cols-4 gap-1 rounded-xl bg-white/5 p-1" role="tablist" aria-label="Quote type">
+    {tabs.map((t, i) => (
+      <button type="button" role="tab" id={`qt-${t.id}`} aria-controls={`qp-${t.id}`} aria-selected={i === 0 ? 'true' : 'false'} tabindex={i === 0 ? 0 : -1}
+        class="qtab flex flex-col items-center gap-1 rounded-control px-1 py-2 text-[0.7rem] font-semibold text-fg-subtle transition hover:text-white sm:text-xs" data-tab={t.id}>
+        <Icon name={t.icon} class="size-4" />{t.label}
+      </button>
+    ))}
+  </div>
+
+  <!-- PCB -->
+  <div class="mt-4" id="qp-pcb" role="tabpanel" aria-labelledby="qt-pcb">
+  <form class="qpanel" data-kind="pcb" data-target="/contact" data-service="PCB Design & Manufacturing">
+    <div class="grid grid-cols-2 gap-3">
+      <label class="ql">Material<select name="Material" class={sel}>{Q.pcb.material.map((o) => <option>{o}</option>)}</select></label>
+      <label class="ql">Layers<select name="Layers" class={sel}>{Q.pcb.layers.map((o) => <option selected={o === '2'}>{o}</option>)}</select></label>
+      <div class="ql col-span-2">
+        <span>Board size (mm)</span>
+        <div class="flex items-center gap-2">
+          <input name="Width (mm)" inputmode="decimal" placeholder="Width" class={sel} aria-label="Board width in mm" />
+          <span class="text-fg-subtle">×</span>
+          <input name="Height (mm)" inputmode="decimal" placeholder="Height" class={sel} aria-label="Board height in mm" />
+        </div>
+      </div>
+      <label class="ql">Quantity<select name="Quantity" class={sel}>{Q.pcb.quantity.map((o) => <option>{o}</option>)}</select></label>
+      <label class="ql">Thickness<select name="Thickness" class={sel}>{Q.pcb.thickness.map((o) => <option selected={o === '1.6 mm'}>{o}</option>)}</select></label>
+      <label class="ql col-span-2">Surface finish<select name="Surface finish" class={sel}>{Q.pcb.finish.map((o) => <option>{o}</option>)}</select></label>
+    </div>
+    <button class="btn btn-primary mt-5 w-full">Get a PCB Quote <Icon name="ArrowRight" class="size-4" /></button>
+  </form>
+  </div>
+
+  <!-- Assembly -->
+  <div class="mt-4 hidden" id="qp-assembly" role="tabpanel" aria-labelledby="qt-assembly">
+  <form class="qpanel" data-kind="assembly" data-target="/resources/bom-upload">
+    <div class="grid grid-cols-2 gap-3">
+      <label class="ql">Boards to assemble<select name="Boards" class={sel}>{Q.assembly.boards.map((o) => <option>{o}</option>)}</select></label>
+      <label class="ql">Unique parts (BOM lines)<select name="Unique parts" class={sel}>{Q.assembly.parts.map((o) => <option>{o}</option>)}</select></label>
+      <label class="ql col-span-2">Placement<select name="Placement" class={sel}>{Q.assembly.sides.map((o) => <option>{o}</option>)}</select></label>
+      <label class="ql col-span-2">Component sourcing<select name="Sourcing" class={sel}>{Q.assembly.sourcing.map((o) => <option>{o}</option>)}</select></label>
+    </div>
+    <button class="btn btn-primary mt-5 w-full"><Icon name="Upload" class="size-4" />Continue to BOM Upload</button>
+  </form>
+  </div>
+
+  <!-- Stencil -->
+  <div class="mt-4 hidden" id="qp-stencil" role="tabpanel" aria-labelledby="qt-stencil">
+  <form class="qpanel" data-kind="stencil" data-target="/contact" data-service="PCB Design & Manufacturing">
+    <div class="grid grid-cols-2 gap-3">
+      <label class="ql">Type<select name="Stencil type" class={sel}>{Q.stencil.type.map((o) => <option>{o}</option>)}</select></label>
+      <label class="ql">Thickness<select name="Stencil thickness" class={sel}>{Q.stencil.thickness.map((o) => <option selected={o === '0.12 mm'}>{o}</option>)}</select></label>
+      <div class="ql col-span-2">
+        <span>PCB size (mm)</span>
+        <div class="flex items-center gap-2">
+          <input name="PCB width (mm)" inputmode="decimal" placeholder="Width" class={sel} aria-label="PCB width in mm" />
+          <span class="text-fg-subtle">×</span>
+          <input name="PCB height (mm)" inputmode="decimal" placeholder="Height" class={sel} aria-label="PCB height in mm" />
+        </div>
+      </div>
+      <label class="ql col-span-2">Quantity<select name="Stencils" class={sel}>{Q.stencil.quantity.map((o) => <option>{o}</option>)}</select></label>
+    </div>
+    <button class="btn btn-primary mt-5 w-full">Get a Stencil Quote <Icon name="ArrowRight" class="size-4" /></button>
+  </form>
+  </div>
+
+  <!-- Engineering -->
+  <div class="mt-4 hidden" id="qp-engineering" role="tabpanel" aria-labelledby="qt-engineering">
+  <form class="qpanel" data-kind="engineering" data-target="/contact" data-service="End-to-End Product Development">
+    <div class="grid grid-cols-1 gap-3">
+      <label class="ql">What do you need?<select name="Engineering service" class={sel}>{Q.engineering.service.map((o) => <option>{o}</option>)}</select></label>
+      <label class="ql">Project stage<select name="Project stage" class={sel}>{Q.engineering.stage.map((o) => <option>{o}</option>)}</select></label>
+      <label class="ql">One-line summary<input name="Summary" placeholder="e.g. LoRa soil sensor, battery powered" class={sel} /></label>
+    </div>
+    <button class="btn btn-primary mt-5 w-full">Discuss My Project <Icon name="ArrowRight" class="size-4" /></button>
+  </form>
+  </div>
+
+  <p class="mt-4 flex items-start gap-2 text-xs leading-relaxed text-fg-subtle">
+    <Icon name="ShieldCheck" class="mt-0.5 size-3.5 shrink-0 text-signal-400" />
+    No automated pricing: an engineer reviews every request and replies with pricing and lead time. Files are kept confidential.
+  </p>
+</div>
+
+<style>
+  .ql { display: flex; flex-direction: column; gap: .3rem; font-size: .7rem; font-weight: 500; letter-spacing: .02em; color: rgb(148 163 184); }
+  .quote :global(.field) { background: color-mix(in srgb, var(--color-fg) 6%, transparent); border-color: var(--color-line-strong); color: var(--color-fg); }
+  .quote :global(.field::placeholder) { color: rgb(148 163 184 / .7); }
+  .quote :global(.field option) { color: var(--color-ink-950); background: white; }
+  .qtab[aria-selected='true'] { background: rgb(34 211 238 / .14); color: var(--color-fg); box-shadow: inset 0 0 0 1px rgb(34 211 238 / .35); }
+  .qtab[aria-selected='true'] :global(svg) { color: var(--color-signal-400); }
+</style>
+
+<script>
+  const root = document.getElementById('quote');
+  if (root) {
+    const tabs = [...root.querySelectorAll<HTMLButtonElement>('[role=tab]')];
+    const select = (t: HTMLButtonElement, focus = false) => {
+      tabs.forEach((x) => {
+        const on = x === t;
+        x.setAttribute('aria-selected', String(on));
+        x.tabIndex = on ? 0 : -1;
+        document.getElementById(x.getAttribute('aria-controls')!)!.classList.toggle('hidden', !on);
+      });
+      if (focus) t.focus();
+    };
+    tabs.forEach((t, i) => {
+      t.addEventListener('click', () => select(t));
+      t.addEventListener('keydown', (e) => {
+        const k = e.key === 'ArrowRight' ? 1 : e.key === 'ArrowLeft' ? -1 : 0;
+        if (k) { e.preventDefault(); select(tabs[(i + k + tabs.length) % tabs.length], true); }
+      });
+    });
+    // Links like href="#quote?pcb" or a hash of #quote open the right tab
+    const openFromHash = () => {
+      const m = location.hash.match(/^#quote(?:-(\w+))?$/);
+      if (m?.[1]) { const t = tabs.find((x) => x.dataset.tab === m[1]); if (t) select(t); }
+    };
+    openFromHash();
+    addEventListener('hashchange', openFromHash);
+
+    root.querySelectorAll<HTMLFormElement>('form.qpanel').forEach((f) => {
+      f.addEventListener('submit', (e) => {
+        e.preventDefault();
+        const lines = [...new FormData(f).entries()]
+          .filter(([, v]) => String(v).trim())
+          .map(([k, v]) => `${k}: ${v}`);
+        const title = { pcb: 'PCB fabrication quote', assembly: 'PCB assembly quote', stencil: 'SMT stencil quote', engineering: 'Engineering project' }[f.dataset.kind as string];
+        const params = new URLSearchParams({ spec: [`${title} request`, ...lines].join('\n') });
+        if (f.dataset.service) params.set('service', f.dataset.service);
+        (window as any).nfTrack?.('quote_start', { kind: f.dataset.kind });
+        location.href = `${f.dataset.target}?${params}#${f.dataset.target === '/contact' ? 'enquiry' : 'bom-form'}`;
+      });
+    });
+  }
+</script>

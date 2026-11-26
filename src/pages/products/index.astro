@@ -1,0 +1,124 @@
+---
+import BaseLayout from '@/layouts/BaseLayout.astro';
+import PageHero from '@/components/PageHero.astro';
+import Icon from '@/components/Icon.astro';
+import CTABand from '@/components/CTABand.astro';
+import SlideArt from '@/components/home/SlideArt.astro';
+import { getProducts } from '@/lib/content';
+import { Image } from 'astro:assets';
+
+const products = await getProducts();
+const categories = [...new Set(products.map((p) => p.data.category))];
+const willInclude = [
+  { icon: 'FileText', label: 'Product overview' },
+  { icon: 'Image', label: 'High-quality product images' },
+  { icon: 'ListChecks', label: 'Technical specifications' },
+  { icon: 'Download', label: 'Datasheet downloads' },
+  { icon: 'Settings', label: 'Available configurations' },
+  { icon: 'Tag', label: 'Pricing & quotation enquiries' },
+];
+---
+<BaseLayout title="Products" description="Explore Nanofab Innovations' electronic products, hardware platforms and engineering solutions. Specifications, datasheets and quotations.">
+  <PageHero
+    art="showcase"
+    eyebrow="Products"
+    title="Explore Our Engineering Products"
+    lead="Discover our range of electronic products, hardware platforms and engineering solutions."
+    crumbs={[{ label: 'Products' }]}
+  >
+    <div class="mt-9 flex flex-wrap gap-3">
+      <a href="/contact?service=Products%20%26%20Quotation" class="btn btn-primary">Product Enquiry <Icon name="ArrowRight" class="size-4" /></a>
+      <a href="/contact?service=Products%20%26%20Quotation" class="btn btn-outline">Request a Quote</a>
+    </div>
+  </PageHero>
+
+  <section class="section">
+    <div class="container-x">
+      {products.length > 0 ? (
+        <>
+          {categories.length > 1 && (
+            <div class="mb-8 flex flex-wrap gap-2" id="filters" role="group" aria-label="Filter by category">
+              <button type="button" class="chip is-on" data-cat="all">All</button>
+              {categories.map((c) => <button type="button" class="chip" data-cat={c}>{c}</button>)}
+            </div>
+          )}
+          <div class="grid gap-6 sm:grid-cols-2 lg:grid-cols-3">
+            {products.map((p) => (
+              <a href={`/products/${p.id}`} class="card card-hover group flex flex-col overflow-hidden p-0" data-cat={p.data.category} data-reveal>
+                <div class="relative aspect-[4/3] overflow-hidden bg-surface-2">
+                  {p.data.image ? (
+                    <Image src={p.data.image} alt={p.data.name} widths={[400, 700]} sizes="(min-width: 1024px) 33vw, (min-width: 640px) 50vw, 100vw" class="size-full object-cover transition duration-500 group-hover:scale-105" />
+                  ) : (
+                    <div class="bg-grid-light flex size-full items-center justify-center text-fg-faint"><Icon name="Cpu" class="size-16" strokeWidth={1} /></div>
+                  )}
+                  {p.data.draft && <span class="absolute top-3 left-3 rounded bg-copper-500 px-2 py-0.5 font-mono text-[0.65rem] text-white">DRAFT</span>}
+                </div>
+                <div class="flex flex-1 flex-col p-6">
+                  <p class="font-mono text-xs uppercase tracking-wider text-accent">{p.data.category}</p>
+                  <h2 class="mt-2 text-lg">{p.data.name}</h2>
+                  <p class="mt-2 text-sm text-fg-muted">{p.data.summary}</p>
+                  <span class="mt-auto inline-flex items-center gap-1 pt-5 text-sm font-semibold text-accent">View details <Icon name="ArrowRight" class="size-4 transition group-hover:translate-x-1" /></span>
+                </div>
+              </a>
+            ))}
+          </div>
+        </>
+      ) : (
+        <div>
+          <div class="max-w-2xl" data-reveal>
+            <p class="eyebrow">Available now</p>
+            <h2 class="h-section mt-3">Solutions you can deploy today</h2>
+            <p class="lead mt-4">Our full product catalogue is being prepared. These are the solutions our team can discuss and quote right now.</p>
+          </div>
+          <div class="mt-12 grid gap-6 lg:grid-cols-2">
+            <a href="/infrastructure" class="trace group on-dark relative flex flex-col overflow-hidden rounded-panel bg-grad-night p-8 sm:p-10" data-reveal>
+              <span class="chip relative w-fit border-emerald-400/30 bg-emerald-400/10 text-emerald-300">Infrastructure solution</span>
+              <h3 class="relative mt-5 max-w-sm font-display text-3xl text-white">Smart Street Lighting</h3>
+              <p class="relative mt-3 max-w-sm text-fg-muted">Centralized monitoring and control of street lighting through an integrated dashboard.</p>
+              <div class="pointer-events-none relative mt-6 h-56 sm:h-64"><SlideArt name="lighting" /></div>
+              <span class="relative mt-auto inline-flex items-center gap-1 pt-4 text-sm font-semibold text-signal-400">Explore the solution <Icon name="ArrowRight" class="size-4 transition group-hover:translate-x-1" /></span>
+            </a>
+            <a href="/services#product" class="trace group on-dark relative flex flex-col overflow-hidden rounded-panel bg-grad-showcase p-8 sm:p-10" data-reveal>
+              <span class="chip relative w-fit border-signal-400/30 bg-signal-400/10 text-signal-300">Custom development</span>
+              <h3 class="relative mt-5 max-w-sm font-display text-3xl text-white">Your Product, Engineered</h3>
+              <p class="relative mt-3 max-w-sm text-fg-muted">Need a device that doesn't exist yet? We design the hardware, firmware and enclosure, and take it to production.</p>
+              <div class="pointer-events-none relative mt-6 h-56 sm:h-64"><SlideArt name="iot" /></div>
+              <span class="relative mt-auto inline-flex items-center gap-1 pt-4 text-sm font-semibold text-signal-400">See product development <Icon name="ArrowRight" class="size-4 transition group-hover:translate-x-1" /></span>
+            </a>
+          </div>
+          <div class="mt-6 grid items-center gap-8 rounded-panel border border-line bg-surface-2 p-8 lg:grid-cols-12" data-reveal>
+            <div class="lg:col-span-5">
+              <p class="font-display text-xl font-semibold text-fg">Full catalogue coming soon</p>
+              <p class="mt-2 text-sm text-fg-muted">Our team can share product information, datasheets and quotations directly in the meantime.</p>
+              <a href="/contact?service=Products%20%26%20Quotation" class="btn btn-primary mt-5">Product Enquiry <Icon name="ArrowRight" class="size-4" /></a>
+            </div>
+            <ul class="grid gap-3 sm:grid-cols-2 lg:col-span-7">
+              {willInclude.map((w) => (
+                <li class="flex items-center gap-3"><span class="icon-tile size-9"><Icon name={w.icon} class="size-4" /></span><span class="text-sm font-medium text-fg">{w.label}</span></li>
+              ))}
+            </ul>
+          </div>
+        </div>
+      )}
+    </div>
+  </section>
+
+  <CTABand title="Need a custom product?" text="If an off-the-shelf product doesn't fit, our engineering team can design one around your exact requirements." primary={{ label: 'Start Your Project', href: '/contact' }} secondary={{ label: 'Our Services', href: '/services' }} />
+</BaseLayout>
+
+<style>
+  .chip { cursor: pointer; }
+  .chip.is-on { background: var(--color-fg); color: var(--color-surface); border-color: var(--color-fg); }
+</style>
+<script>
+  const filters = document.getElementById('filters');
+  filters?.addEventListener('click', (e) => {
+    const btn = (e.target as HTMLElement).closest<HTMLButtonElement>('[data-cat]');
+    if (!btn) return;
+    const cat = btn.dataset.cat;
+    filters.querySelectorAll('.chip').forEach((c) => c.classList.toggle('is-on', c === btn));
+    document.querySelectorAll<HTMLElement>('a[data-cat]').forEach((card) => {
+      card.hidden = cat !== 'all' && card.dataset.cat !== cat;
+    });
+  });
+</script>

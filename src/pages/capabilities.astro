@@ -1,0 +1,118 @@
+---
+import BaseLayout from '@/layouts/BaseLayout.astro';
+import PageHero from '@/components/PageHero.astro';
+import Icon from '@/components/Icon.astro';
+import CheckList from '@/components/CheckList.astro';
+import CTABand from '@/components/CTABand.astro';
+import { capabilities } from '@/data/site';
+import { capabilitySpecs } from '@/data/capability-specs';
+const specGroups = capabilitySpecs.filter((g) => g.rows.some((r) => r.value));
+const blurbs = [
+  'Boards built to your design, from first prototypes to assembled production batches.',
+  'Architecture, circuits and firmware engineered together as one system.',
+  'From an idea on paper to a product that is validated and ready to manufacture.',
+];
+const stages = [
+  { icon: 'FlaskConical', title: 'Prototype', text: 'Validate the design quickly with small batches and engineering support.' },
+  { icon: 'Layers', title: 'Pilot batch', text: 'Prove assembly, testing and component supply before committing to volume.' },
+  { icon: 'Factory', title: 'Production', text: 'Repeatable builds with sourcing, assembly and testing under one roof.' },
+];
+---
+<BaseLayout title="Engineering Capabilities" description="PCB manufacturing, embedded engineering and product development capabilities at Nanofab Innovations.">
+  <PageHero
+    art="assembly"
+    eyebrow="Engineering Capabilities"
+    title="Engineering Expertise. Manufacturing Precision."
+    lead="Capabilities across the full electronics lifecycle, from hardware architecture to production readiness."
+    crumbs={[{ label: 'Services', href: '/services' }, { label: 'Capabilities' }]}
+  />
+  <section class="section">
+    <div class="container-x space-y-6">
+      {capabilities.map((c, i) => (
+        <article class="card grid gap-8 p-8 sm:p-10 lg:grid-cols-12 lg:items-center" data-reveal>
+          <div class="lg:col-span-4">
+            <div class="flex items-center gap-4">
+              <span class="icon-tile size-14"><Icon name={c.icon} class="size-7" /></span>
+              <span class="font-mono text-xs text-accent-2">0{i + 1}</span>
+            </div>
+            <h2 class="mt-6 font-display text-2xl sm:text-3xl">{c.title}</h2>
+            <p class="mt-3 text-fg-muted">{blurbs[i]}</p>
+          </div>
+          <ul class="grid gap-3 sm:grid-cols-2 lg:col-span-8">
+            {c.items.map((it) => (
+              <li class="flex items-center gap-3 rounded-card border border-line bg-surface-2 px-5 py-4">
+                <Icon name="Check" class="size-4 shrink-0 text-accent" strokeWidth={2.5} />
+                <span class="font-medium text-fg">{it}</span>
+              </li>
+            ))}
+          </ul>
+        </article>
+      ))}
+    </div>
+
+    <!-- Prototype → production -->
+    <div class="container-x mt-16">
+      <div class="on-dark bg-grad-deep relative overflow-hidden rounded-panel p-8 sm:p-12" data-reveal>
+        <div class="bg-grid absolute inset-0 opacity-40" aria-hidden="true"></div>
+        <p class="eyebrow relative">Scale with us</p>
+        <h2 class="relative mt-3 font-display text-3xl text-fg sm:text-4xl">From first prototype to production runs</h2>
+        <ol class="relative mt-10 grid gap-6 md:grid-cols-3">
+          {stages.map((st, i) => (
+            <li class="relative">
+              <div class="flex items-center gap-3">
+                <span class="flex size-11 items-center justify-center rounded-full border border-signal-400/40 bg-signal-400/10 text-signal-300"><Icon name={st.icon} class="size-5" /></span>
+                {i < stages.length - 1 && <span class="hidden h-px flex-1 bg-gradient-to-r from-signal-400/50 to-transparent md:block"></span>}
+              </div>
+              <h3 class="mt-4 font-display text-xl text-fg">{st.title}</h3>
+              <p class="mt-1.5 text-sm text-fg-muted">{st.text}</p>
+            </li>
+          ))}
+        </ol>
+      </div>
+    </div>
+    {specGroups.length > 0 && (
+      <div class="container-x mt-20">
+        <div class="max-w-3xl" data-reveal>
+          <p class="eyebrow">Technical specifications</p>
+          <h2 class="h-section mt-3">Manufacturing capabilities in detail</h2>
+          <p class="lead mt-4">Standard capabilities. Requirements beyond these can often be accommodated, so ask our engineers.</p>
+        </div>
+        <div class="mt-10 grid gap-6 lg:grid-cols-2">
+          {specGroups.map((g) => (
+            <div class="card overflow-hidden p-0" id={g.id} data-reveal>
+              <div class="flex items-center gap-3 border-b border-line bg-surface-2 px-6 py-4">
+                <span class="icon-tile size-9"><Icon name={g.icon} class="size-5" /></span>
+                <h3 class="text-base">{g.title}</h3>
+              </div>
+              <table class="w-full text-sm">
+                <caption class="sr-only">{g.title} specifications</caption>
+                <tbody class="divide-y divide-line">
+                  {g.rows.map((r) => (
+                    <tr>
+                      <th scope="row" class="w-1/2 px-6 py-3 text-left font-normal text-fg-subtle">{r.label}</th>
+                      <td class:list={['px-6 py-3', r.value ? 'font-medium text-fg' : 'text-fg-subtle italic']}>
+                        {r.value || 'On request'}{r.note && <span class="block text-xs font-normal text-fg-subtle">{r.note}</span>}
+                      </td>
+                    </tr>
+                  ))}
+                </tbody>
+              </table>
+            </div>
+          ))}
+        </div>
+      </div>
+    )}
+    <div class="container-x mt-10">
+      <div class="flex flex-col items-start gap-4 rounded-card border border-dashed border-line-strong bg-surface-2 p-6 sm:flex-row sm:items-center" data-reveal>
+        <span class="icon-tile"><Icon name="FileText" class="size-5" /></span>
+        <p class="flex-1 text-sm text-fg-muted">
+          {specGroups.length
+            ? 'Figures are typical capabilities and are confirmed for each project in your quotation.'
+            : 'Detailed technical specifications and manufacturing limits will be published separately. Need specific figures for your project now?'}
+        </p>
+        <a href="/contact" class="btn btn-outline shrink-0">Ask our engineers</a>
+      </div>
+    </div>
+  </section>
+  <CTABand />
+</BaseLayout>

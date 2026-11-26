@@ -1,0 +1,50 @@
+---
+import Logo from './Logo.astro';
+import Icon from './Icon.astro';
+import { site, footerLinks as allLinks } from '@/data/site';
+import { getCaseStudies, getTeam } from '@/lib/content';
+const hidden = new Set<string>();
+if (!(await getCaseStudies()).length) hidden.add('/case-studies');
+if (!(await getTeam()).length) hidden.add('/team');
+const consentEnabled = (import.meta.env.PUBLIC_ANALYTICS ?? '').toLowerCase() === 'ga4' && !!import.meta.env.PUBLIC_GA4_ID;
+const footerLinks = { ...allLinks, company: allLinks.company.filter((l) => !hidden.has(l.href)) };
+const year = new Date().getFullYear();
+---
+<footer class="on-dark relative overflow-hidden bg-ink-950 text-fg-subtle">
+  <div class="bg-grid absolute inset-0 opacity-40" aria-hidden="true"></div>
+  <div class="container-x relative grid gap-12 py-16 md:grid-cols-2 lg:grid-cols-12">
+    <div class="lg:col-span-5">
+      <Logo />
+      <p class="mt-5 text-base font-semibold text-white">{site.legalName}</p>
+      <p class="mt-1 text-signal-400">{site.tagline}</p>
+      <p class="mt-5 flex flex-wrap gap-x-3 gap-y-1 font-mono text-xs uppercase tracking-wider text-fg-subtle">
+        {site.pillars.map((p, i) => (<>{i > 0 && <span class="text-fg-body">|</span>}<span>{p}</span></>))}
+      </p>
+      <div class="mt-6 space-y-2 text-sm">
+        {site.contact.email && <a href={`mailto:${site.contact.email}`} class="flex items-center gap-2 hover:text-white"><Icon name="Mail" class="size-4" />{site.contact.email}</a>}
+        {site.contact.phone && <a href={`tel:${site.contact.phone}`} class="flex items-center gap-2 hover:text-white"><Icon name="Phone" class="size-4" />{site.contact.phone}</a>}
+        {site.contact.address && <p class="flex items-start gap-2"><Icon name="MapPin" class="mt-0.5 size-4" />{site.contact.address}</p>}
+        {site.social.linkedin && <a href={site.social.linkedin} class="flex items-center gap-2 hover:text-white" rel="noopener" target="_blank"><Icon name="Linkedin" class="size-4" />LinkedIn</a>}
+      </div>
+    </div>
+    {[
+      { title: 'Quick Links', links: footerLinks.quick },
+      { title: 'Company', links: footerLinks.company },
+      { title: 'Legal', links: footerLinks.legal },
+    ].map((col) => (
+      <div class="lg:col-span-2 lg:first-of-type:col-start-7">
+        <h3 class="font-mono text-xs font-medium uppercase tracking-[0.18em] text-white">{col.title}</h3>
+        <ul class="mt-4 space-y-2.5 text-sm">
+          {col.links.map((l) => <li><a href={l.href} class="transition hover:text-signal-400">{l.label}</a></li>)}
+          {col.title === 'Legal' && consentEnabled && <li><a href="#" data-cookie-settings class="transition hover:text-signal-400">Cookie settings</a></li>}
+        </ul>
+      </div>
+    ))}
+  </div>
+  <div class="relative border-t border-white/10">
+    <div class="container-x flex flex-col gap-2 py-6 text-xs sm:flex-row sm:items-center sm:justify-between">
+      <p>&copy; {year} {site.legalName} All rights reserved.{site.legal.cin && <span class="ml-2 text-fg-subtle">CIN: {site.legal.cin}</span>}</p>
+      <p class="font-mono text-fg-subtle">Engineering Innovation. Enabling Possibilities.</p>
+    </div>
+  </div>
+</footer>

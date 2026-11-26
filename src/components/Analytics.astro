@@ -1,0 +1,41 @@
+---
+// Analytics, configured by environment variables (see .env.example):
+//   PUBLIC_ANALYTICS=plausible  + PUBLIC_PLAUSIBLE_DOMAIN   → cookieless, no banner needed
+//   PUBLIC_ANALYTICS=ga4        + PUBLIC_GA4_ID             → loaded only after consent
+// Anything else → no analytics. window.nfTrack(event, props) is always defined,
+// so pages can record events (e.g. form submissions) regardless of provider.
+const provider = (import.meta.env.PUBLIC_ANALYTICS ?? '').toLowerCase();
+const plausibleDomain = import.meta.env.PUBLIC_PLAUSIBLE_DOMAIN ?? '';
+const plausibleSrc = import.meta.env.PUBLIC_PLAUSIBLE_SRC || 'https://plausible.io/js/script.js';
+const ga4 = import.meta.env.PUBLIC_GA4_ID ?? '';
+const mode = provider === 'plausible' && plausibleDomain ? 'plausible' : provider === 'ga4' && ga4 ? 'ga4' : 'none';
+---
+<script is:inline define:vars={{ mode, ga4 }}>
+  window.nfAnalytics = mode;
+  window.nfTrack = function (name, props) {
+    try {
+      if (mode === 'plausible' && window.plausible) window.plausible(name, { props: props });
+      if (mode === 'ga4' && window.gtag) window.gtag('event', name, props || {});
+    } catch (e) {}
+  };
+  if (mode === 'ga4') {
+    window.dataLayer = window.dataLayer || [];
+    window.gtag = function () { window.dataLayer.push(arguments); };
+    window.nfLoadGA = function () {
+      if (window.__gaLoaded) return; window.__gaLoaded = true;
+      var s = document.createElement('script');
+      s.async = true; s.src = 'https://www.googletagmanager.com/gtag/js?id=' + ga4;
+      document.head.appendChild(s);
+      window.gtag('js', new Date());
+      window.gtag('config', ga4, { anonymize_ip: true });
+    };
+    var c = null; try { c = localStorage.getItem('nf-consent'); } catch (e) {}
+    if (c === 'granted') window.nfLoadGA();
+  }
+</script>
+{mode === 'plausible' && (
+  <>
+    <script is:inline defer data-domain={plausibleDomain} src={plausibleSrc}></script>
+    <script is:inline>window.plausible = window.plausible || function () { (window.plausible.q = window.plausible.q || []).push(arguments); };</script>
+  </>
+)}

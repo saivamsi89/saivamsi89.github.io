@@ -1,0 +1,44 @@
+---
+// Latest blog posts on the home page. Hidden if there are no published posts.
+import { Image } from 'astro:assets';
+import Icon from '../Icon.astro';
+import { getPosts, formatDate } from '@/lib/content';
+const posts = (await getPosts()).slice(0, 3);
+---
+{posts.length > 0 && (
+  <section class="cv-auto section bg-surface-2">
+    <div class="container-x">
+      <div class="flex flex-col justify-between gap-6 md:flex-row md:items-end">
+        <div class="max-w-2xl" data-reveal>
+          <p class="eyebrow">Blogs</p>
+          <h2 class="h-section mt-3">Insights from the engineering floor</h2>
+          <p class="lead mt-4">PCB design, embedded systems, IoT and manufacturing: practical guides from our engineers.</p>
+        </div>
+        <a href="/resources/blog" class="btn btn-outline shrink-0">All blogs <Icon name="ArrowRight" class="size-4" /></a>
+      </div>
+      <div class:list={['mt-12 grid gap-5 md:grid-cols-2', posts.length >= 3 && 'lg:grid-cols-3']}>
+        {posts.map((p) => (
+          <a href={`/resources/blog/${p.id}`} class="trace group card card-hover flex flex-col overflow-hidden p-0" data-reveal>
+            {p.data.cover ? (
+              <Image src={p.data.cover} alt="" widths={[480, 800]} sizes="(min-width: 1024px) 33vw, 100vw" class="aspect-[16/9] w-full object-cover" />
+            ) : (
+              <div class="on-dark relative flex aspect-[2/1] items-end overflow-hidden bg-ink-900 p-5">
+                <div class="bg-grid absolute inset-0 opacity-60" aria-hidden="true"></div>
+                <Icon name="CircuitBoard" class="absolute -top-4 -right-4 size-32 text-signal-400/10" strokeWidth={1} />
+                <div class="relative flex flex-wrap gap-2">
+                  {p.data.tags.slice(0, 2).map((t) => <span class="rounded-full border border-white/15 bg-white/5 px-2.5 py-1 font-mono text-[0.65rem] tracking-wide text-fg-muted uppercase">{t}</span>)}
+                </div>
+              </div>
+            )}
+            <div class="flex flex-1 flex-col p-6">
+              <p class="font-mono text-xs text-fg-subtle">{formatDate(p.data.date)}</p>
+              <h3 class="mt-2 font-display text-xl leading-snug">{p.data.title}</h3>
+              <p class="mt-2 line-clamp-3 text-sm text-fg-muted">{p.data.description}</p>
+              <span class="mt-auto inline-flex items-center gap-1 pt-5 text-sm font-semibold text-accent">Read article <Icon name="ArrowRight" class="size-4 transition group-hover:translate-x-1" /></span>
+            </div>
+          </a>
+        ))}
+      </div>
+    </div>
+  </section>
+)}

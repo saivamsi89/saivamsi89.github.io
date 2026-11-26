@@ -1,0 +1,66 @@
+---
+import BaseLayout from '@/layouts/BaseLayout.astro';
+import PageHero from '@/components/PageHero.astro';
+import Icon from '@/components/Icon.astro';
+import EnquiryForm from '@/components/EnquiryForm.astro';
+
+const steps = [
+  { icon: 'Upload', text: 'Upload your BOM file.' },
+  { icon: 'UserRound', text: 'Provide your contact and project details.' },
+  { icon: 'Send', text: 'Submit your requirements.' },
+  { icon: 'ListChecks', text: 'Our team reviews the component list.' },
+  { icon: 'FileText', text: 'Receive a quotation from our team.' },
+];
+const tips = [
+  'Manufacturer part numbers (MPN) for every line',
+  'Quantity per board and reference designators',
+  'Description: value, tolerance, rating, package',
+  'Approved alternates and DNP parts flagged',
+];
+---
+<BaseLayout title="BOM Upload & Quotation" description="Upload your Bill of Materials for component availability checks and quotation assistance from Nanofab Innovations.">
+  <PageHero
+    eyebrow="BOM Upload & Quotation Tool"
+    title="Simplify Your Component Sourcing Process."
+    lead="Have a Bill of Materials ready for your project? Upload your BOM and submit your requirements to our team for component availability checks and quotation assistance."
+    crumbs={[{ label: 'Resources', href: '/resources' }, { label: 'BOM Upload' }]}
+  >
+    <a href="#bom-form" class="btn btn-primary mt-9">Upload Your BOM <Icon name="ArrowDown" class="size-4" /></a>
+  </PageHero>
+
+  <section class="section pb-0">
+    <div class="container-x">
+      <p class="eyebrow">How it works</p>
+      <ol class="mt-6 grid gap-4 sm:grid-cols-2 lg:grid-cols-5">
+        {steps.map((s, i) => (
+          <li class="card relative" data-reveal>
+            <div class="flex items-center justify-between">
+              <span class="font-mono text-sm font-semibold text-accent-2">{String(i + 1).padStart(2, '0')}</span>
+              <span class="icon-tile size-10"><Icon name={s.icon} class="size-5" /></span>
+            </div>
+            <p class="mt-5 font-semibold text-fg">{s.text}</p>
+          </li>
+        ))}
+      </ol>
+    </div>
+  </section>
+
+  <section class="section" id="bom-form">
+    <div class="container-x grid scroll-mt-24 gap-12 lg:grid-cols-12">
+      <div class="lg:col-span-8"><h2 class="sr-only">BOM upload form</h2><EnquiryForm variant="bom" /></div>
+      <aside class="space-y-5 lg:col-span-4">
+        <div class="card bg-surface-2">
+          <h2 class="text-base">For the fastest quotation, include:</h2>
+          <ul class="mt-4 space-y-2.5 text-sm">
+            {tips.map((t) => <li class="flex gap-2.5"><Icon name="Check" class="mt-0.5 size-4 shrink-0 text-accent" strokeWidth={2.5} />{t}</li>)}
+          </ul>
+          <a href="/resources/blog/preparing-your-bom-for-faster-quotations" class="btn btn-ghost mt-4 text-sm">Read our BOM preparation guide <Icon name="ArrowRight" class="size-4" /></a>
+        </div>
+        <div class="card flex gap-4">
+          <span class="icon-tile"><Icon name="ShieldCheck" class="size-5" /></span>
+          <p class="text-sm text-fg-muted">Your BOM and design files are handled as confidential and used only to evaluate your request and prepare your quotation (<a href="/privacy-policy#files" class="text-accent underline">details</a>). Need an NDA first? Ask us before uploading.</p>
+        </div>
+      </aside>
+    </div>
+  </section>
+</BaseLayout>

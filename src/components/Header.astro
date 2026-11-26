@@ -1,0 +1,170 @@
+---
+import Logo from './Logo.astro';
+import Icon from './Icon.astro';
+import AnnouncementBar from './AnnouncementBar.astro';
+import { nav as allNav } from '@/data/site';
+import { getCaseStudies, getTeam } from '@/lib/content';
+// Hide links to sections that have no published content yet.
+const hidden = new Set<string>();
+if (!(await getCaseStudies()).length) hidden.add('/case-studies');
+if (!(await getTeam()).length) hidden.add('/team');
+const nav = allNav.map((i) => ({ ...i, children: i.children?.filter((c) => !hidden.has(c.href)) }));
+
+const path = Astro.url.pathname.replace(/\/$/, '') || '/';
+const matches = (href: string) => (href === '/' ? path === '/' : path === href || path.startsWith(href + '/'));
+const activeHref = nav.map((i) => i.href).filter(matches).sort((a, b) => b.length - a.length)[0];
+const isActive = (href: string) => href === activeHref;
+---
+<header id="site-header" class="fixed inset-x-0 top-0 z-50 transition-colors duration-300" data-scrolled="false">
+  <AnnouncementBar />
+  <div class="container-x flex h-18 items-center justify-between gap-6">
+    <a href="/" class="logo-link">
+      <Logo />
+      <span class="sr-only">Home</span>
+    </a>
+
+    <nav aria-label="Primary" class="hidden lg:block">
+      <ul class="flex items-center gap-0.5 xl:gap-1">
+        {nav.map((item) => (
+          <li class="group relative">
+            <a
+              href={item.href}
+              aria-current={isActive(item.href) ? 'page' : undefined}
+              class:list={['nav-link inline-flex items-center gap-1 rounded-md px-2.5 py-2 text-sm font-medium whitespace-nowrap transition xl:px-3', isActive(item.href) && 'is-active']}
+            >
+              {item.label}
+              {item.children && <Icon name="ChevronDown" class="size-3.5 opacity-70 transition group-hover:rotate-180" />}
+            </a>
+            {item.children && (
+              <div class="invisible absolute top-full left-1/2 w-80 -translate-x-1/2 pt-3 opacity-0 transition duration-150 group-focus-within:visible group-focus-within:opacity-100 group-hover:visible group-hover:opacity-100">
+                <ul class="rounded-card border border-line bg-surface p-2 shadow-2xl shadow-ink-900/10">
+                  {item.children.map((c) => (
+                    <li>
+                      <a href={c.href} class="block rounded-xl px-4 py-3 transition hover:bg-surface-2">
+                        <span class="block text-sm font-semibold text-fg">{c.label}</span>
+                        {c.desc && <span class="block text-xs text-fg-subtle">{c.desc}</span>}
+                      </a>
+                    </li>
+                  ))}
+                </ul>
+              </div>
+            )}
+          </li>
+        ))}
+      </ul>
+    </nav>
+
+    <div class="flex items-center gap-2">
+      <div class="relative" id="theme-switch">
+        <button id="theme-toggle" type="button" class="menu-btn inline-flex size-10 items-center justify-center rounded-control transition" aria-haspopup="true" aria-expanded="false" aria-controls="theme-menu" aria-label="Theme: System">
+          <span data-icon="system"><Icon name="Monitor" class="size-5" /></span>
+          <span data-icon="light" hidden><Icon name="Sun" class="size-5" /></span>
+          <span data-icon="dark" hidden><Icon name="Moon" class="size-5" /></span>
+        </button>
+        <div id="theme-menu" class="absolute top-full right-0 mt-2 w-40 rounded-card border border-line bg-surface p-1.5 shadow-2xl shadow-ink-950/20" hidden>
+          <p class="px-3 pt-1.5 pb-1 font-mono text-2xs tracking-[0.18em] text-fg-subtle uppercase">Theme</p>
+          {[['system', 'Monitor', 'System'], ['light', 'Sun', 'Light'], ['dark', 'Moon', 'Dark']].map(([v, icon, label]) => (
+            <button type="button" data-theme-choice={v} aria-pressed="false" class="theme-opt flex w-full items-center gap-3 rounded-control px-3 py-2 text-sm text-fg-body hover:bg-surface-2">
+              <Icon name={icon} class="size-4" />{label}<Icon name="Check" class="check ml-auto size-4 text-accent" />
+            </button>
+          ))}
+        </div>
+      </div>
+      <a href="/contact" class="btn btn-primary hidden btn-sm whitespace-nowrap sm:inline-flex lg:hidden xl:inline-flex">Start Your Project</a>
+      <button
+        id="menu-toggle"
+        type="button"
+        class="menu-btn inline-flex size-10 items-center justify-center rounded-control lg:hidden"
+        aria-controls="mobile-menu"
+        aria-expanded="false"
+        aria-label="Open menu"
+      >
+        <span class="icon-open"><Icon name="Menu" class="size-6" /></span>
+        <span class="icon-close hidden"><Icon name="X" class="size-6" /></span>
+      </button>
+    </div>
+  </div>
+
+  <div id="mobile-menu" class="hidden max-h-[calc(100dvh-4.5rem)] overflow-y-auto border-t border-line bg-surface lg:hidden">
+    <nav aria-label="Mobile" class="container-x py-4">
+      <ul class="divide-y divide-line">
+        {nav.map((item) => (
+          <li class="py-1">
+            <a href={item.href} class="block py-2.5 text-base font-semibold text-fg">{item.label}</a>
+            {item.children && (
+              <ul class="mb-2 grid gap-0.5 border-l-2 border-signal-500/30 pl-4">
+                {item.children.map((c) => (
+                  <li><a href={c.href} class="block py-1.5 text-sm text-fg-muted">{c.label}</a></li>
+                ))}
+              </ul>
+            )}
+          </li>
+        ))}
+      </ul>
+      <a href="/contact" class="btn btn-primary mt-4 w-full">Start Your Project</a>
+    </nav>
+  </div>
+</header>
+
+<style>
+  /* All colours come from theme tokens: at the top of the page the logo, links and
+     buttons use dark-section values (see global.css); once scrolled or opened, the
+     page theme's values. No per-theme special cases needed. */
+  #site-header { background: linear-gradient(to bottom, rgb(5 12 24 / .55), rgb(5 12 24 / 0)); }
+  #site-header[data-scrolled='true'], #site-header[data-open='true'] {
+    background: color-mix(in srgb, var(--color-surface) 92%, transparent);
+    backdrop-filter: blur(12px);
+    box-shadow: 0 1px 0 var(--color-line);
+  }
+  .nav-link { color: var(--color-fg-muted); transition: color .3s, background-color .2s; }
+  .nav-link:hover, .nav-link.is-active { color: var(--color-fg); background: color-mix(in srgb, var(--color-fg) 8%, transparent); }
+  .menu-btn { color: var(--color-fg); transition: color .3s, background-color .2s; }
+  .menu-btn:hover { background: color-mix(in srgb, var(--color-fg) 8%, transparent); }
+  .theme-opt[aria-pressed='false'] :global(.check) { visibility: hidden; }
+</style>
+
+<script>
+  const header = document.getElementById('site-header')!;
+  const toggle = document.getElementById('menu-toggle')!;
+  const menu = document.getElementById('mobile-menu')!;
+  const onScroll = () => header.setAttribute('data-scrolled', String(window.scrollY > 24));
+  onScroll();
+  window.addEventListener('scroll', onScroll, { passive: true });
+  const setOpen = (open: boolean) => {
+    menu.classList.toggle('hidden', !open);
+    header.setAttribute('data-open', String(open));
+    toggle.setAttribute('aria-expanded', String(open));
+    toggle.setAttribute('aria-label', open ? 'Close menu' : 'Open menu');
+    toggle.querySelector('.icon-open')!.classList.toggle('hidden', open);
+    toggle.querySelector('.icon-close')!.classList.toggle('hidden', !open);
+    document.body.style.overflow = open ? 'hidden' : '';
+  };
+  toggle.addEventListener('click', () => setOpen(menu.classList.contains('hidden')));
+  document.addEventListener('keydown', (e) => e.key === 'Escape' && setOpen(false));
+  // Theme: System / Light / Dark. The initial theme is applied by an inline script in
+  // BaseLayout before first paint; "system" = no stored choice, follow the device.
+  const themeBtn = document.getElementById('theme-toggle')!;
+  const themeMenu = document.getElementById('theme-menu')!;
+  const getChoice = () => { try { return localStorage.getItem('theme') || 'system'; } catch { return 'system'; } };
+  const systemDark = () => matchMedia('(prefers-color-scheme: dark)').matches;
+  const applyTheme = (choice: string) => {
+    document.documentElement.dataset.theme = choice === 'system' ? (systemDark() ? 'dark' : 'light') : choice;
+    themeBtn.querySelectorAll<HTMLElement>('[data-icon]').forEach((i) => (i.hidden = i.dataset.icon !== choice));
+    themeBtn.setAttribute('aria-label', `Theme: ${choice[0].toUpperCase()}${choice.slice(1)}`);
+    themeMenu.querySelectorAll<HTMLElement>('[data-theme-choice]').forEach((b) => b.setAttribute('aria-pressed', String(b.dataset.themeChoice === choice)));
+  };
+  const setMenu = (open: boolean) => { themeMenu.hidden = !open; themeBtn.setAttribute('aria-expanded', String(open)); };
+  applyTheme(getChoice());
+  themeBtn.addEventListener('click', (e) => { e.stopPropagation(); setMenu(themeMenu.hidden); if (!themeMenu.hidden) themeMenu.querySelector<HTMLElement>('[aria-pressed=true]')?.focus(); });
+  themeMenu.querySelectorAll<HTMLButtonElement>('[data-theme-choice]').forEach((b) =>
+    b.addEventListener('click', () => {
+      const c = b.dataset.themeChoice!;
+      try { c === 'system' ? localStorage.removeItem('theme') : localStorage.setItem('theme', c); } catch {}
+      applyTheme(c); setMenu(false); themeBtn.focus();
+    }),
+  );
+  document.addEventListener('click', (e) => { if (!(e.target as Element).closest('#theme-switch')) setMenu(false); });
+  document.addEventListener('keydown', (e) => { if (e.key === 'Escape' && !themeMenu.hidden) { setMenu(false); themeBtn.focus(); } });
+  matchMedia('(prefers-color-scheme: dark)').addEventListener('change', () => { if (getChoice() === 'system') applyTheme('system'); });
+  window.matchMedia('(min-width: 1024px)').addEventListener('change', (e) => e.matches && setOpen(false));
+</script>

@@ -1,0 +1,206 @@
+---
+// Shared multipart enquiry form used by Contact and BOM Upload.
+// Submissions POST to PUBLIC_FORM_ENDPOINT (see .env.example).
+import Icon from './Icon.astro';
+import { serviceOptions } from '@/data/site';
+
+interface Props {
+  variant: 'contact' | 'bom';
+  submitLabel?: string;
+}
+const { variant, submitLabel = variant === 'bom' ? 'Submit BOM for Quotation' : 'Submit Enquiry' } = Astro.props;
+const endpoint = import.meta.env.PUBLIC_FORM_ENDPOINT ?? '';
+const accept = variant === 'bom'
+  ? '.xlsx,.xls,.csv,.ods,.txt,.pdf,.zip'
+  : '.pdf,.zip,.rar,.7z,.png,.jpg,.jpeg,.xlsx,.xls,.csv,.doc,.docx,.step,.stp,.dxf,.txt';
+const maxMb = 10;
+---
+<form id={variant === 'bom' ? 'bom-enquiry' : 'enquiry'} class="enquiry-form card scroll-mt-32 p-6 sm:p-8" method="post" action={endpoint || undefined} enctype="multipart/form-data" data-endpoint={endpoint} data-max-mb={maxMb} data-variant={variant} novalidate>
+  <input type="hidden" name="form" value={variant === 'bom' ? 'BOM Upload' : 'Contact Enquiry'} />
+  <input type="hidden" name="product" value="" />
+  <!-- honeypot: real users never see or fill this -->
+  <div class="hidden" aria-hidden="true"><label>Leave empty<input type="text" name="_gotcha" tabindex="-1" autocomplete="off" /></label></div>
+
+  <div class="grid gap-5 sm:grid-cols-2">
+    <div>
+      <label class="field-label" for={`${variant}-name`}>Full Name <span class="text-accent-2">*</span></label>
+      <input class="field" id={`${variant}-name`} name="name" autocomplete="name" required />
+    </div>
+    <div>
+      <label class="field-label" for={`${variant}-company`}>Company / Organization</label>
+      <input class="field" id={`${variant}-company`} name="company" autocomplete="organization" />
+    </div>
+    <div>
+      <label class="field-label" for={`${variant}-email`}>Email Address <span class="text-accent-2">*</span></label>
+      <input class="field" id={`${variant}-email`} name="email" type="email" autocomplete="email" required />
+    </div>
+    <div>
+      <label class="field-label" for={`${variant}-phone`}>Phone Number</label>
+      <input class="field" id={`${variant}-phone`} name="phone" type="tel" autocomplete="tel" />
+    </div>
+    <div>
+      <label class="field-label" for={`${variant}-country`}>Country <span class="text-accent-2">*</span></label>
+      <input class="field" id={`${variant}-country`} name="country" autocomplete="country-name" required />
+    </div>
+
+    {variant === 'contact' ? (
+      <div>
+        <label class="field-label" for="contact-service">Service Required <span class="text-accent-2">*</span></label>
+        <select class="field" id="contact-service" name="service" required>
+          <option value="">Select a service…</option>
+          {serviceOptions.map((s) => <option value={s}>{s}</option>)}
+        </select>
+      </div>
+    ) : (
+      <div>
+        <label class="field-label" for="bom-qty">Build Quantity <span class="text-accent-2">*</span></label>
+        <select class="field" id="bom-qty" name="quantity" required>
+          <option value="">Select quantity…</option>
+          <option>Prototype (1–10 boards)</option>
+          <option>Pilot batch (10–100 boards)</option>
+          <option>Small production (100–1,000 boards)</option>
+          <option>Production (1,000+ boards)</option>
+        </select>
+      </div>
+    )}
+
+    {variant === 'bom' && (
+      <>
+        <div>
+          <label class="field-label" for="bom-project">Project Name</label>
+          <input class="field" id="bom-project" name="project" />
+        </div>
+        <div>
+          <label class="field-label" for="bom-timeline">Required By</label>
+          <input class="field" id="bom-timeline" name="required_by" type="date" />
+        </div>
+        <fieldset class="sm:col-span-2">
+          <legend class="field-label">Also interested in</legend>
+          <div class="mt-1 flex flex-wrap gap-x-6 gap-y-2 text-sm">
+            {['PCB Fabrication', 'PCB Assembly', 'Stencil', 'Enclosure'].map((o) => (
+              <label class="inline-flex items-center gap-2"><input type="checkbox" name="also" value={o} class="size-4 rounded border-line-strong accent-signal-600" />{o}</label>
+            ))}
+          </div>
+        </fieldset>
+      </>
+    )}
+
+    <div class="sm:col-span-2">
+      <label class="field-label" for={`${variant}-desc`}>
+        {variant === 'bom' ? 'Requirements & Notes' : 'Project Description'} {variant === 'contact' && <span class="text-accent-2">*</span>}
+      </label>
+      <textarea class="field min-h-32" id={`${variant}-desc`} name="message" rows="5" required={variant === 'contact'}
+        placeholder={variant === 'bom' ? 'Approved alternates, consigned parts, special requirements…' : 'Tell us about your product idea, engineering challenge or manufacturing requirement.'}></textarea>
+    </div>
+
+    <div class="sm:col-span-2">
+      <span class="field-label">{variant === 'bom' ? <>BOM File <span class="text-accent-2">*</span></> : 'File Attachment (optional)'}</span>
+      <label class="dropzone group flex cursor-pointer flex-col items-center justify-center gap-2 rounded-xl border-2 border-dashed border-line-strong bg-surface-2 px-6 py-8 text-center transition hover:border-signal-500">
+        <span class="icon-tile"><Icon name={variant === 'bom' ? 'FileSpreadsheet' : 'Paperclip'} class="size-5" /></span>
+        <span class="text-sm"><span class="font-semibold text-accent">Choose a file</span> or drag it here</span>
+        <span class="file-name text-xs text-fg-muted">
+          {variant === 'bom' ? 'Excel, CSV, ODS, PDF or ZIP' : 'PDF, ZIP, images, Gerbers (zipped), CAD or documents'} · max {maxMb} MB
+        </span>
+        <input type="file" name="attachment" accept={accept} class="sr-only" required={variant === 'bom'} />
+      </label>
+    </div>
+
+    <label class="flex items-start gap-3 text-sm text-fg-muted sm:col-span-2">
+      <input type="checkbox" name="consent" required class="mt-0.5 size-4 shrink-0 rounded border-line-strong accent-signal-600" />
+      <span>I consent to Nanofab Innovations processing the personal data in this form{variant === 'bom' ? ' and the files I upload' : ''} to respond to my enquiry, as described in the <a href="/privacy-policy" class="text-accent underline">Privacy Policy</a>. I can withdraw consent at any time. <span class="text-accent-2">*</span></span>
+    </label>
+  </div>
+
+  <div class="form-status mt-6 hidden rounded-control px-4 py-3 text-sm" role="status" aria-live="polite"></div>
+
+  <button type="submit" class="btn btn-primary mt-6 w-full sm:w-auto" data-label={submitLabel}>
+    <span class="label">{submitLabel}</span><Icon name="Send" class="size-4" />
+  </button>
+</form>
+
+<script>
+  document.querySelectorAll<HTMLFormElement>('form.enquiry-form').forEach((form) => {
+    const status = form.querySelector<HTMLElement>('.form-status')!;
+    const btn = form.querySelector<HTMLButtonElement>('button[type=submit]')!;
+    const fileInput = form.querySelector<HTMLInputElement>('input[type=file]')!;
+    const fileName = form.querySelector<HTMLElement>('.file-name')!;
+    const drop = form.querySelector<HTMLElement>('.dropzone')!;
+    const maxBytes = Number(form.dataset.maxMb) * 1024 * 1024;
+    const defaultHint = fileName.textContent;
+
+    // Prefill from query string (?service=…&product=…)
+    const params = new URLSearchParams(location.search);
+    const svc = form.querySelector<HTMLSelectElement>('select[name=service]');
+    if (svc && params.get('service')) svc.value = params.get('service')!;
+    const spec = params.get('spec');
+    if (spec) {
+      const msg = form.querySelector<HTMLTextAreaElement>('textarea[name=message]');
+      if (msg && !msg.value) msg.value = `${spec.slice(0, 1500)}\n\n`;
+    }
+    const product = params.get('product');
+    if (product) {
+      (form.querySelector('input[name=product]') as HTMLInputElement).value = product;
+      const msg = form.querySelector<HTMLTextAreaElement>('textarea[name=message]');
+      if (msg && !msg.value) msg.value = `Enquiry about: ${product}\n\n`;
+    }
+
+    const setStatus = (kind: 'ok' | 'err' | 'info', text: string) => {
+      status.className = 'form-status mt-6 rounded-control px-4 py-3 text-sm ' +
+        (kind === 'ok' ? 'bg-emerald-50 text-emerald-800 ring-1 ring-emerald-200'
+          : kind === 'err' ? 'bg-red-50 text-red-800 ring-1 ring-red-200'
+          : 'bg-amber-50 text-amber-900 ring-1 ring-amber-200');
+      status.textContent = text;
+    };
+
+    const showFile = () => {
+      const f = fileInput.files?.[0];
+      fileName.textContent = f ? `${f.name} (${(f.size / 1024 / 1024).toFixed(2)} MB)` : defaultHint;
+      fileName.classList.toggle('font-semibold', !!f);
+    };
+    fileInput.addEventListener('change', showFile);
+    ['dragenter', 'dragover'].forEach((ev) => drop.addEventListener(ev, (e) => { e.preventDefault(); drop.classList.add('border-signal-500'); }));
+    ['dragleave', 'drop'].forEach((ev) => drop.addEventListener(ev, (e) => { e.preventDefault(); drop.classList.remove('border-signal-500'); }));
+    drop.addEventListener('drop', (e) => {
+      const files = (e as DragEvent).dataTransfer?.files;
+      if (files?.length) { fileInput.files = files; showFile(); }
+    });
+
+    form.addEventListener('submit', async (e) => {
+      e.preventDefault();
+      form.querySelectorAll('[aria-invalid]').forEach((el) => el.removeAttribute('aria-invalid'));
+      if (!form.checkValidity()) {
+        const invalid = [...form.querySelectorAll<HTMLInputElement>(':invalid')].filter((el) => el.name);
+        invalid.forEach((el) => el.setAttribute('aria-invalid', 'true'));
+        invalid[0]?.focus();
+        setStatus('err', 'Please complete the required fields marked with *.');
+        return;
+      }
+      const f = fileInput.files?.[0];
+      if (f && f.size > maxBytes) { setStatus('err', `The file is larger than ${form.dataset.maxMb} MB. Please compress it or contact us for another way to share it.`); return; }
+
+      const endpoint = form.dataset.endpoint;
+      if (!endpoint) {
+        setStatus('info', 'Thanks! Online submissions are not connected yet. Please contact us directly while we finish setting this up.');
+        return;
+      }
+      btn.disabled = true;
+      btn.querySelector('.label')!.textContent = 'Sending…';
+      try {
+        const res = await fetch(endpoint, { method: 'POST', body: new FormData(form), headers: { Accept: 'application/json' } });
+        if (!res.ok) throw new Error(String(res.status));
+        form.reset(); showFile();
+        setStatus('ok', 'Thank you! Your submission has been received. Our team will get back to you shortly.');
+        (window as any).nfTrack?.(form.dataset.variant === 'bom' ? 'bom_upload' : 'contact_enquiry', { page: location.pathname });
+      } catch {
+        setStatus('err', 'Something went wrong sending your submission. Please try again in a moment.');
+      } finally {
+        btn.disabled = false;
+        btn.querySelector('.label')!.textContent = btn.dataset.label!;
+      }
+    });
+  });
+</script>
+
+<style>
+  .field[aria-invalid='true'] { border-color: var(--color-danger); box-shadow: 0 0 0 4px color-mix(in srgb, var(--color-danger) 14%, transparent); }
+</style>

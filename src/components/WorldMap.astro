@@ -1,0 +1,64 @@
+---
+// Build-time rendered world map (no client-side map library).
+import { geoEqualEarth, geoPath } from 'd3-geo';
+import { feature } from 'topojson-client';
+import world from 'world-atlas/countries-110m.json';
+import { locations } from '@/data/site';
+
+const W = 960, H = 470;
+const land = feature(world as any, (world as any).objects.countries) as any;
+const projection = geoEqualEarth().fitExtent([[8, 8], [W - 8, H - 8]], { type: 'Sphere' } as any);
+const path = geoPath(projection);
+const countries = land.features
+  .filter((f: any) => f.properties.name !== 'Antarctica')
+  .map((f: any) => ({ d: path(f), name: f.properties.name as string }));
+const pins = locations.map((l) => {
+  const [x, y] = projection([l.lon, l.lat])!;
+  return { ...l, x, y };
+});
+const color = { Office: '#22d3ee', Partner: '#f59e5b', Representative: '#a7f3d0' } as const;
+---
+<div class="relative" id="world-map">
+  <svg viewBox={`0 0 ${W} ${H}`} class="h-auto w-full" role="img" aria-label={pins.length ? `World map showing ${pins.length} Nanofab locations` : 'World map'}>
+    <path d={path({ type: 'Sphere' } as any)} fill="#0d1d33" stroke="#1f3a5c" />
+    <g fill="#1b3150" stroke="#2a4468" stroke-width="0.5">
+      {countries.map((c: any) => <path d={c.d}><title>{c.name}</title></path>)}
+    </g>
+    {pins.map((p) => (
+      <g class="pin" tabindex="0" role="button" aria-label={`${p.name}, ${p.city} (${p.type})`} data-label={`${p.name} · ${p.city}`} data-type={p.type} transform={`translate(${p.x} ${p.y})`}>
+        <circle r="14" fill={color[p.type]} opacity="0.18" class="ping" />
+        <circle r="5" fill={color[p.type]} stroke="#0a1628" stroke-width="2" />
+      </g>
+    ))}
+  </svg>
+  <div id="map-tip" class="pointer-events-none absolute hidden -translate-x-1/2 -translate-y-full rounded-control bg-surface px-3 py-2 text-xs font-medium whitespace-nowrap text-fg shadow-lg"></div>
+</div>
+
+<style>
+  .pin { cursor: pointer; outline: none; }
+  .pin:focus-visible circle:last-child { stroke: #fff; }
+  .ping { transform-origin: center; animation: ping 2.4s ease-out infinite; }
+  @keyframes ping { from { transform: scale(0.6); opacity: .5 } to { transform: scale(1.8); opacity: 0 } }
+  @media (prefers-reduced-motion: reduce) { .ping { animation: none; } }
+</style>
+
+<script>
+  const wrap = document.getElementById('world-map');
+  const tip = document.getElementById('map-tip');
+  if (wrap && tip) {
+    const show = (el: SVGGElement) => {
+      const r = el.getBoundingClientRect(), w = wrap.getBoundingClientRect();
+      tip.textContent = `${el.dataset.label} — ${el.dataset.type}`;
+      tip.style.left = `${r.left - w.left + r.width / 2}px`;
+      tip.style.top = `${r.top - w.top - 6}px`;
+      tip.classList.remove('hidden');
+    };
+    const hide = () => tip.classList.add('hidden');
+    wrap.querySelectorAll<SVGGElement>('.pin').forEach((p) => {
+      p.addEventListener('mouseenter', () => show(p));
+      p.addEventListener('focus', () => show(p));
+      p.addEventListener('mouseleave', hide);
+      p.addEventListener('blur', hide);
+    });
+  }
+</script>

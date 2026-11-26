@@ -1,0 +1,15 @@
+---
+import Icon from './Icon.astro';
+interface Props { items: string[]; cols?: 1 | 2; class?: string }
+const { items, cols = 1, class: cls = '' } = Astro.props;
+---
+<ul class:list={['grid gap-x-6 gap-y-2.5', cols === 2 && 'sm:grid-cols-2', cls]}>
+  {items.map((it) => (
+    <li class="flex items-start gap-2.5 text-[0.95rem]">
+      <span class="mt-0.5 inline-flex size-5 shrink-0 items-center justify-center rounded-full bg-signal-500/12 text-accent">
+        <Icon name="Check" class="size-3.5" strokeWidth={2.5} />
+      </span>
+      <span>{it}</span>
+    </li>
+  ))}
+</ul>

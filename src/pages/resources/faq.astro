@@ -1,0 +1,51 @@
+---
+import BaseLayout from '@/layouts/BaseLayout.astro';
+import PageHero from '@/components/PageHero.astro';
+import Icon from '@/components/Icon.astro';
+import CTABand from '@/components/CTABand.astro';
+import { faq } from '@/data/faq';
+
+const ld = {
+  '@context': 'https://schema.org',
+  '@type': 'FAQPage',
+  mainEntity: faq.flatMap((g) => g.items.map((i) => ({ '@type': 'Question', name: i.q, acceptedAnswer: { '@type': 'Answer', text: i.a } }))),
+};
+const slug = (s: string) => s.toLowerCase().replace(/[^a-z0-9]+/g, '-');
+---
+<BaseLayout title="FAQ" description="Answers to common questions about PCB manufacturing, fabrication, assembly, component sourcing and embedded product development.">
+  <script type="application/ld+json" set:html={JSON.stringify(ld)} slot="head" />
+  <PageHero
+    eyebrow="Frequently Asked Questions"
+    title="Answers to common questions"
+    lead="Find answers to common questions about PCB manufacturing, fabrication, assembly, component sourcing and embedded product development."
+    crumbs={[{ label: 'Resources', href: '/resources' }, { label: 'FAQ' }]}
+  />
+  <section class="section">
+    <div class="container-x grid gap-12 lg:grid-cols-12">
+      <nav aria-label="FAQ sections" class="lg:col-span-3">
+        <ul class="sticky top-28 space-y-1 text-sm">
+          {faq.map((g) => <li><a href={`#${slug(g.group)}`} class="block rounded-control px-3 py-2 text-fg-muted hover:bg-surface-2 hover:text-fg">{g.group}</a></li>)}
+        </ul>
+      </nav>
+      <div class="space-y-12 lg:col-span-9">
+        {faq.map((g) => (
+          <div id={slug(g.group)} class="scroll-mt-28">
+            <h2 class="text-2xl">{g.group}</h2>
+            <div class="mt-5 divide-y divide-line rounded-card border border-line">
+              {g.items.map((i) => (
+                <details class="group px-6 py-1 [&_summary::-webkit-details-marker]:hidden">
+                  <summary class="flex cursor-pointer list-none items-center justify-between gap-4 py-4 font-semibold text-fg">
+                    {i.q}
+                    <span class="icon-tile size-8 transition group-open:rotate-45"><Icon name="Plus" class="size-4" /></span>
+                  </summary>
+                  <p class="pb-5 leading-relaxed text-fg-muted">{i.a}</p>
+                </details>
+              ))}
+            </div>
+          </div>
+        ))}
+      </div>
+    </div>
+  </section>
+  <CTABand title="Didn't find your answer?" text="Our engineering team is happy to help with specific questions about your project." primary={{ label: 'Ask Our Team', href: '/contact' }} />
+</BaseLayout>

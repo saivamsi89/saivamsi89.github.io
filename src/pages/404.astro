@@ -1,0 +1,13 @@
+---
+import BaseLayout from '@/layouts/BaseLayout.astro';
+import PageHero from '@/components/PageHero.astro';
+import Icon from '@/components/Icon.astro';
+---
+<BaseLayout title="Page Not Found" noindex>
+  <PageHero eyebrow="Error 404 · Open circuit" title="This trace doesn&rsquo;t lead anywhere." lead="The page you're looking for has moved or doesn't exist.">
+    <div class="mt-9 flex flex-wrap gap-3">
+      <a href="/" class="btn btn-primary"><Icon name="House" class="size-4" />Back to Home</a>
+      <a href="/contact" class="btn btn-outline">Contact Us</a>
+    </div>
+  </PageHero>
+</BaseLayout>

@@ -1,0 +1,19 @@
+---
+import Icon from '../Icon.astro';
+const tiles = [
+  { icon: 'Layers', title: 'End-to-End Engineering', text: 'Concept, design, manufacturing and firmware' },
+  { icon: 'Rocket', title: 'Prototype to Production', text: 'Prototypes, pilot batches and production runs' },
+  { icon: 'BadgeCheck', title: 'Engineer-Reviewed Quotes', text: 'Every request checked by a real engineer' },
+  { icon: 'ShieldCheck', title: 'Confidential by Default', text: 'Your designs stay yours, NDA on request' },
+];
+---
+<section class="border-b border-line bg-surface">
+  <div class="container-x grid grid-cols-1 gap-6 py-10 sm:grid-cols-2 lg:grid-cols-4">
+    {tiles.map((t) => (
+      <div class="flex items-center gap-4" data-reveal>
+        <span class="flex size-12 shrink-0 items-center justify-center rounded-xl border border-line text-fg"><Icon name={t.icon} class="size-6" strokeWidth={1.5} /></span>
+        <div><p class="font-display text-[1.05rem] font-semibold text-fg">{t.title}</p><p class="text-sm text-fg-subtle">{t.text}</p></div>
+      </div>
+    ))}
+  </div>
+</section>

@@ -1,0 +1,213 @@
+---
+// Rolling banner hero: full-width slides that slide sideways in a seamless loop,
+// each with its own picture; the slide controls stay fixed on top.
+import Icon from '../Icon.astro';
+import SlideArt from './SlideArt.astro';
+import { Image } from 'astro:assets';
+import { heroPhoto } from '@/lib/assets';
+import { heroSlides as slides } from '@/data/home';
+const DURATION = 6500;
+---
+<section id="hero" class="hero on-dark relative isolate overflow-hidden bg-ink-950" aria-roledescription="carousel" aria-label="Nanofab highlights" data-duration={DURATION}>
+  <div class="track-wrap overflow-hidden">
+    <div class="track flex">
+      {slides.map((s, i) => {
+        const Heading = i === 0 ? 'h1' : 'h2';
+        return (
+          <div class:list={['slide relative isolate w-full shrink-0', i === 0 && 'is-active']} style={`background: var(--grad-${s.bg})`}
+            role="group" aria-roledescription="slide" aria-label={`${i + 1} of ${slides.length}: ${s.tab}`} data-slide={i} inert={i === 0 ? undefined : true}>
+            <div class="bg-grid absolute inset-0 -z-10 opacity-25" aria-hidden="true"></div>
+            {s.photo && (
+              <div class="slide-photo absolute inset-y-0 right-0 -z-10 hidden w-[56%] lg:block" aria-hidden="true">
+                <Image src={heroPhoto(s.photo)!} alt="" widths={[960, 1440, 1920]} sizes="56vw" loading={i === 0 ? 'eager' : 'lazy'} class="size-full object-cover object-[12%_center]" />
+              </div>
+            )}
+            <div class="container-x slide-inner grid items-center gap-8 lg:grid-cols-12">
+              <div class="slide-copy lg:col-span-6">
+                {s.eyebrow && <p class="eyebrow">{s.eyebrow}</p>}
+                <Heading class="mt-4 font-display text-[2.3rem] leading-[1.05] font-bold tracking-[-0.035em] text-white sm:text-5xl lg:text-[3.7rem]">
+                  <span class="block">{s.title}</span>
+                  {s.accent && <span class="accent block">{s.accent}</span>}
+                </Heading>
+                {s.bullets && (
+                  <ul class="mt-7 space-y-3">
+                    {s.bullets.map((b) => (
+                      <li class="flex items-start gap-3 text-base text-fg-body sm:text-lg"><span class="mt-2.5 size-1.5 shrink-0 rounded-full bg-signal-400"></span>{b}</li>
+                    ))}
+                  </ul>
+                )}
+                <div class="mt-8">
+                  <a href={s.cta.href} class="btn btn-primary btn-lg btn-pill">{s.cta.label} <Icon name="ChevronRight" class="size-4" /></a>
+                </div>
+              </div>
+              {s.photo ? (
+                <div class="slide-art relative overflow-hidden rounded-panel lg:hidden" aria-hidden="true">
+                  <Image src={heroPhoto(s.photo)!} alt="" widths={[640, 960]} sizes="100vw" loading="lazy" class="size-full object-cover" />
+                </div>
+              ) : s.art && (
+                <div class="slide-art relative lg:col-span-6"><SlideArt name={s.art} /></div>
+              )}
+            </div>
+          </div>
+        );
+      })}
+    </div>
+  </div>
+
+  <!-- Fixed layer: slide controls -->
+  <div class="hero-ctrl pointer-events-none lg:absolute lg:inset-x-0 lg:bottom-0">
+    <div class="container-x pointer-events-auto pt-2 pb-6 lg:pt-0 lg:pb-8">
+      <div class="flex items-center justify-center gap-4">
+        <button type="button" class="hero-pause ctrl-btn size-9" aria-label="Pause slideshow" aria-pressed="false">
+          <span class="i-pause"><Icon name="Pause" class="size-3.5" /></span><span class="i-play hidden"><Icon name="Play" class="size-3.5" /></span>
+        </button>
+        <div class="flex gap-2" role="tablist" aria-label="Choose a slide">
+          {slides.map((s, i) => (
+            <button type="button" role="tab" class="hero-tab group relative py-3" aria-selected={i === 0 ? 'true' : 'false'} aria-label={`${i + 1}: ${s.tab}`} title={s.tab} data-go={i}>
+              <span class="seg block h-[3px] w-10 overflow-hidden rounded-full sm:w-24"><span class="bar block h-full w-full"></span></span>
+            </button>
+          ))}
+        </div>
+      </div>
+    </div>
+  </div>
+
+  <button type="button" class="hero-prev ctrl-btn absolute top-1/2 left-4 hidden size-11 -translate-y-1/2 lg:inline-flex xl:left-6" aria-label="Previous slide"><Icon name="ChevronLeft" class="size-5" /></button>
+  <button type="button" class="hero-next ctrl-btn absolute top-1/2 right-4 hidden size-11 -translate-y-1/2 lg:inline-flex xl:right-6" aria-label="Next slide"><Icon name="ChevronRight" class="size-5" /></button>
+</section>
+
+<style>
+  .track { transition: transform .85s cubic-bezier(.65, 0, .35, 1); will-change: transform; }
+  .track.no-anim { transition: none; }
+  /* off-screen slides are not rendered until they become active */
+  .slide:not(.is-active) { content-visibility: auto; contain-intrinsic-size: auto 100svh; }
+  .slide-inner { padding-top: 8.5rem; padding-bottom: 2rem; }
+  /* Photo slides: the image fades into the slide's gradient from the left and the bottom */
+  .slide-photo { mask-image: linear-gradient(to right, transparent 0%, black 38%); }
+  .slide-photo::after { content: ''; position: absolute; inset: 0; background: linear-gradient(180deg, rgb(5 12 24 / .25), rgb(5 12 24 / .1) 45%, rgb(5 12 24 / .85)); }
+  .slide-art { height: 18rem; }
+  @media (min-width: 640px) { .slide-art { height: 24rem; } }
+  @media (min-width: 1024px) {
+    .slide { min-height: max(46rem, 100svh); display: flex; }
+    .slide-inner { padding-top: 8rem; padding-bottom: 7rem; min-height: 100%; }
+    .slide-art { height: min(32rem, 58svh); }
+  }
+  .accent { background: linear-gradient(90deg, var(--color-signal-300), var(--color-signal-400) 55%, var(--color-copper-400)); -webkit-background-clip: text; background-clip: text; color: transparent; }
+  /* copy enters after the slide arrives */
+  .slide-copy > * { opacity: 0; transform: translateY(14px); transition: opacity .55s ease, transform .55s ease; }
+  .slide.is-active .slide-copy > * { opacity: 1; transform: none; }
+  .slide.is-active .slide-copy > :nth-child(1) { transition-delay: .15s; }
+  .slide.is-active .slide-copy > :nth-child(2) { transition-delay: .25s; }
+  .slide.is-active .slide-copy > :nth-child(3) { transition-delay: .35s; }
+  .slide.is-active .slide-copy > :nth-child(4) { transition-delay: .45s; }
+  :global(html:not(.js)) .slide-copy > * { opacity: 1; transform: none; }
+
+  /* controls */
+  .ctrl-btn { display: inline-flex; align-items: center; justify-content: center; border-radius: 999px; border: 1px solid rgb(255 255 255 / .2);
+    background: rgb(5 12 24 / .35); color: var(--color-fg); backdrop-filter: blur(6px); transition: background .2s, border-color .2s, color .2s; }
+  .ctrl-btn:hover { background: rgb(255 255 255 / .15); }
+  .ctrl-btn[hidden] { display: none; }
+  @media (max-width: 1023px) { .hero-prev, .hero-next { display: none; } }
+  .seg { background: rgb(255 255 255 / .25); }
+  .bar { background: var(--color-fg); transform: scaleX(0); transform-origin: left; }
+  .hero-tab[aria-selected='true'] .bar { animation: hero-progress var(--dur, 6500ms) linear forwards; }
+  .hero.is-paused .hero-tab[aria-selected='true'] .bar { animation-play-state: paused; }
+  .hero.is-static .hero-tab[aria-selected='true'] .bar, .hero.is-held .hero-tab[aria-selected='true'] .bar { animation: none; transform: scaleX(1); }
+  @keyframes hero-progress { to { transform: scaleX(1); } }
+  @media (max-width: 1023px) { .hero-ctrl { background: var(--color-ink-950); } }
+  @media (prefers-reduced-motion: reduce) { .track, .slide-copy > * { transition: none !important; } }
+</style>
+
+<script>
+  const hero = document.querySelector<HTMLElement>('.hero');
+  if (hero) {
+    const track = hero.querySelector<HTMLElement>('.track')!;
+    const slides = [...hero.querySelectorAll<HTMLElement>('.slide')];
+    const tabs = [...hero.querySelectorAll<HTMLButtonElement>('.hero-tab')];
+    const pauseBtn = hero.querySelector<HTMLButtonElement>('.hero-pause')!;
+    const N = slides.length;
+    const dur = Number(hero.dataset.duration);
+    const reduced = matchMedia('(prefers-reduced-motion: reduce)').matches;
+    hero.style.setProperty('--dur', `${dur}ms`);
+
+    // A copy of the first slide at the end makes the loop seamless (last → first keeps rolling forward).
+    const clone = slides[0].cloneNode(true) as HTMLElement;
+    clone.setAttribute('aria-hidden', 'true'); clone.inert = true; clone.classList.remove('is-active'); clone.dataset.clone = '';
+    clone.querySelectorAll('h1').forEach((h) => { const d = document.createElement('div'); d.className = h.className; d.innerHTML = h.innerHTML; h.replaceWith(d); });
+    clone.querySelectorAll('[id]').forEach((el) => el.removeAttribute('id'));
+    track.appendChild(clone);
+
+    let index = 0, timer = 0, userPaused = false, hoverPaused = false, visible = true;
+    let loaded = document.readyState === 'complete'; // auto-advance starts after the page has loaded
+    const real = () => index % N;
+    const playing = () => loaded && !reduced && !userPaused && visible && !document.hidden;
+
+    const schedule = () => {
+      clearTimeout(timer);
+      hero.classList.toggle('is-paused', !playing() || hoverPaused);
+      if (playing() && !hoverPaused) timer = window.setTimeout(() => go(index + 1), dur);
+    };
+    const go = (n: number, animate = true) => {
+      if (n < 0) { // previous from the first slide: jump to the copy at the end, then roll back to the last slide
+        track.classList.add('no-anim'); track.style.transform = `translateX(-${N * 100}%)`; void track.offsetWidth; track.classList.remove('no-anim');
+        n = N - 1;
+      }
+      index = Math.min(N, n);
+      track.classList.toggle('no-anim', !animate || reduced);
+      track.style.transform = `translateX(-${index * 100}%)`;
+      slides.forEach((s, i) => { const on = i === real(); s.classList.toggle('is-active', on); s.inert = !on; on ? s.removeAttribute('aria-hidden') : s.setAttribute('aria-hidden', 'true'); });
+      clone.classList.toggle('is-active', index === N);
+      tabs.forEach((t, i) => {
+        t.setAttribute('aria-selected', String(i === real()));
+        const bar = t.querySelector<HTMLElement>('.bar')!; bar.style.animation = 'none'; void bar.offsetWidth; bar.style.animation = '';
+      });
+      schedule();
+      if (index === N && (reduced || !animate)) snapBack();
+    };
+    const snapBack = () => {
+      track.classList.add('no-anim'); index = 0; track.style.transform = 'translateX(0)'; void track.offsetWidth; track.classList.remove('no-anim');
+      clone.classList.remove('is-active');
+    };
+    track.addEventListener('transitionend', (e) => { if (e.target === track && index === N) snapBack(); });
+
+    if (reduced) { hero.classList.add('is-static'); pauseBtn.hidden = true; }
+    tabs.forEach((t) => t.addEventListener('click', () => go(Number(t.dataset.go))));
+    hero.querySelector('.hero-next')!.addEventListener('click', () => go(index + 1));
+    hero.querySelector('.hero-prev')!.addEventListener('click', () => go(real() - 1));
+    pauseBtn.addEventListener('click', () => {
+      userPaused = !userPaused;
+      hero.classList.toggle('is-held', userPaused);
+      pauseBtn.setAttribute('aria-pressed', String(userPaused));
+      pauseBtn.setAttribute('aria-label', userPaused ? 'Play slideshow' : 'Pause slideshow');
+      pauseBtn.querySelector('.i-pause')!.classList.toggle('hidden', userPaused);
+      pauseBtn.querySelector('.i-play')!.classList.toggle('hidden', !userPaused);
+      schedule();
+    });
+
+    // Pause while the visitor reads the copy
+    hero.querySelectorAll('.slide-copy').forEach((el) => {
+      el.addEventListener('pointerenter', () => { hoverPaused = true; schedule(); });
+      el.addEventListener('pointerleave', () => { hoverPaused = false; schedule(); });
+      el.addEventListener('focusin', () => { hoverPaused = true; schedule(); });
+      el.addEventListener('focusout', () => { hoverPaused = false; schedule(); });
+    });
+
+    hero.addEventListener('keydown', (e) => {
+      if ((e.target as HTMLElement).closest('input, select, textarea')) return;
+      if (e.key === 'ArrowRight') go(index + 1);
+      if (e.key === 'ArrowLeft') go(real() - 1);
+    });
+    let sx = 0, sy = 0;
+    const tw = hero.querySelector('.track-wrap')!;
+    tw.addEventListener('touchstart', (e) => { const t = (e as TouchEvent).touches[0]; sx = t.clientX; sy = t.clientY; }, { passive: true });
+    tw.addEventListener('touchend', (e) => {
+      const t = (e as TouchEvent).changedTouches[0]; const dx = t.clientX - sx;
+      if (Math.abs(dx) > 50 && Math.abs(dx) > Math.abs(t.clientY - sy)) go(dx < 0 ? index + 1 : real() - 1);
+    });
+
+    new IntersectionObserver(([e]) => { visible = e.isIntersecting; schedule(); }).observe(hero);
+    document.addEventListener('visibilitychange', schedule);
+    go(0, false);
+    if (!loaded) addEventListener('load', () => { loaded = true; schedule(); }, { once: true });
+  }
+</script>

@@ -1,0 +1,110 @@
+---
+import BaseLayout from '@/layouts/BaseLayout.astro';
+import PageHero from '@/components/PageHero.astro';
+import Icon from '@/components/Icon.astro';
+import EnquiryForm from '@/components/EnquiryForm.astro';
+import WorldMap from '@/components/WorldMap.astro';
+import SectionHeader from '@/components/SectionHeader.astro';
+import { audiences, site, locations } from '@/data/site';
+---
+<BaseLayout title="Contact" description="Have a product idea, engineering challenge or manufacturing requirement? Connect with Nanofab Innovations.">
+  <PageHero
+    eyebrow="Contact"
+    title="Let&rsquo;s Build Something Innovative Together."
+    lead="Have a product idea, an engineering challenge or a manufacturing requirement? Connect with Nanofab Innovations. Our team is ready to understand your requirements and explore how we can work together."
+    crumbs={[{ label: 'Contact' }]}
+  />
+
+  <section class="section">
+    <div class="container-x grid gap-12 lg:grid-cols-12">
+      <div class="order-last space-y-5 lg:order-first lg:col-span-4">
+        {audiences.map((a) => (
+          <div class="card flex gap-4" data-reveal>
+            <span class="icon-tile"><Icon name={a.icon} class="size-5" /></span>
+            <div>
+              <h2 class="text-base">{a.title}</h2>
+              <p class="mt-1 text-sm leading-relaxed text-fg-muted">{a.text}</p>
+            </div>
+          </div>
+        ))}
+        {(site.contact.email || site.contact.phone || site.contact.address) && (
+          <div class="on-dark card space-y-3 border-ink-800 bg-ink-900 text-sm text-fg-muted">
+            {site.contact.email && <a href={`mailto:${site.contact.email}`} class="flex items-center gap-3 hover:text-white"><Icon name="Mail" class="size-4 text-signal-400" />{site.contact.email}</a>}
+            {site.contact.phone && <a href={`tel:${site.contact.phone}`} class="flex items-center gap-3 hover:text-white"><Icon name="Phone" class="size-4 text-signal-400" />{site.contact.phone}</a>}
+            {site.contact.address && <p class="flex items-start gap-3"><Icon name="MapPin" class="mt-0.5 size-4 text-signal-400" />{site.contact.address}</p>}
+          </div>
+        )}
+        <a href="/resources/bom-upload" class="card card-hover group flex items-center gap-4" data-reveal>
+          <span class="icon-tile"><Icon name="Upload" class="size-5" /></span>
+          <span class="flex-1"><span class="block text-sm font-semibold text-fg">Have a BOM ready?</span><span class="block text-xs text-fg-subtle">Use our BOM Upload &amp; Quotation tool</span></span>
+          <Icon name="ArrowRight" class="size-4 text-accent transition group-hover:translate-x-1" />
+        </a>
+      </div>
+      <div class="lg:col-span-8" data-reveal>
+        <h2 class="sr-only">Contact form</h2>
+        <EnquiryForm variant="contact" />
+      </div>
+    </div>
+  </section>
+
+  <!-- What happens next -->
+  <section class="section bg-surface-2">
+    <div class="container-x">
+      <div class="max-w-2xl" data-reveal>
+        <p class="eyebrow">What happens next</p>
+        <h2 class="h-section mt-3">From enquiry to engineering, in three steps</h2>
+      </div>
+      <ol class="mt-10 grid gap-5 md:grid-cols-3">
+        {[
+          ['MailOpen', 'We read your enquiry', 'Your enquiry goes directly to our engineering team.'],
+          ['MessagesSquare', 'An engineer gets in touch', 'We clarify requirements, review any files you shared, and can sign an NDA first if you need one.'],
+          ['FileCheck', 'You receive a proposal', 'A clear scope, approach and quotation for your project.'],
+        ].map(([icon, title, text], i) => (
+          <li class="card relative" data-reveal>
+            <span class="font-mono text-xs text-accent-2">0{i + 1}</span>
+            <span class="icon-tile mt-3 flex size-12"><Icon name={icon} class="size-6" /></span>
+            <h3 class="mt-5 font-display text-xl">{title}</h3>
+            <p class="mt-2 text-fg-muted">{text}</p>
+          </li>
+        ))}
+      </ol>
+    </div>
+  </section>
+
+  {locations.length > 0 && (
+  <section class="section on-dark relative overflow-hidden bg-ink-900">
+    <div class="container-x relative">
+      <SectionHeader
+        eyebrow="Global Presence"
+        title="<span class='text-white'>Connect with us, wherever you are</span>"
+        lead="Connect with our offices, partners and representatives through our interactive global locations map."
+      />
+      <div class="mt-10 grid gap-8 lg:grid-cols-12">
+        <div class="lg:col-span-8"><WorldMap /></div>
+        <div class="lg:col-span-4">
+          {locations.length ? (
+            <ul class="space-y-3">
+              {locations.map((l) => (
+                <li class="rounded-xl border border-white/10 bg-white/[0.03] p-4">
+                  <p class="font-semibold text-white">{l.name}</p>
+                  <p class="text-sm text-fg-subtle">{l.city} · <span class="text-signal-400">{l.type}</span></p>
+                </li>
+              ))}
+            </ul>
+          ) : (
+            <div class="rounded-xl border border-dashed border-white/15 p-6 text-sm text-fg-subtle">
+              <Icon name="Globe" class="size-6 text-signal-400" />
+              <p class="mt-3">Office, partner and representative locations will be added here soon. In the meantime, use the form above and we will connect you with the right team.</p>
+            </div>
+          )}
+          <div class="mt-6 flex flex-wrap gap-4 text-xs text-fg-subtle">
+            <span class="inline-flex items-center gap-2"><span class="size-2.5 rounded-full bg-signal-400"></span>Office</span>
+            <span class="inline-flex items-center gap-2"><span class="size-2.5 rounded-full bg-copper-400"></span>Partner</span>
+            <span class="inline-flex items-center gap-2"><span class="size-2.5 rounded-full bg-emerald-200"></span>Representative</span>
+          </div>
+        </div>
+      </div>
+    </div>
+  </section>
+  )}
+</BaseLayout>

@@ -1,0 +1,37 @@
+---
+import BaseLayout from './BaseLayout.astro';
+import PageHero from '@/components/PageHero.astro';
+import Icon from '@/components/Icon.astro';
+import { site } from '@/data/site';
+interface Props { title: string; description: string; toc?: { id: string; label: string }[] }
+const { title, description, toc = [] } = Astro.props;
+---
+<BaseLayout title={title} description={description}>
+  <PageHero eyebrow="Legal" title={title} crumbs={[{ label: title }]}>
+    <p class="mt-6 font-mono text-sm text-fg-subtle">Last updated: {site.legal.lastUpdated}</p>
+  </PageHero>
+  <section class="section">
+    <div class="container-x">
+      {!site.legal.reviewedByCounsel && (
+        <div class="mx-auto mb-10 flex max-w-5xl gap-3 rounded-xl bg-amber-50 p-4 text-sm text-amber-900 ring-1 ring-amber-200">
+          <Icon name="TriangleAlert" class="mt-0.5 size-5 shrink-0" />
+          <p>Draft pending review by legal counsel. Highlighted items are company details still to be added.</p>
+        </div>
+      )}
+      <div class="mx-auto grid max-w-5xl gap-12 lg:grid-cols-12">
+        {toc.length > 0 && (
+          <nav aria-label="On this page" class="hidden lg:col-span-3 lg:block">
+            <p class="font-mono text-xs uppercase tracking-[0.18em] text-fg-subtle">On this page</p>
+            <ol class="sticky top-28 mt-4 space-y-1.5 text-sm">
+              {toc.map((t) => <li><a href={`#${t.id}`} class="text-fg-muted hover:text-accent-strong">{t.label}</a></li>)}
+            </ol>
+          </nav>
+        )}
+        <div class:list={['prose-nf', toc.length ? 'lg:col-span-9' : 'lg:col-span-12 mx-auto']}><slot /></div>
+      </div>
+    </div>
+  </section>
+</BaseLayout>
+<style is:global>
+  .prose-nf h2 { scroll-margin-top: 6rem; }
+</style>

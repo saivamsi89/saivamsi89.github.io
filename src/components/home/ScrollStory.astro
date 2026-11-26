@@ -1,0 +1,299 @@
+---
+// "Concept to Creation": a sticky, scroll-driven build of a circuit board in six stages.
+// Progressive enhancement: without JS (or with reduced motion) it renders as a
+// static list of stages beside the finished board.
+import { journey } from '@/data/site';
+
+const copy = [
+  'We start with your idea: what it must do, where it will be used and what it should cost. Requirements become a clear technical brief.',
+  'We choose processors, sensors, connectivity and power, and define how every block talks to every other.',
+  'Schematics become a manufacturable board layout, designed for signal integrity, assembly and test.',
+  'We source the components, fabricate the boards and assemble them, from first prototypes to production runs.',
+  'Firmware brings the hardware to life: drivers, communication protocols and application logic, integrated on real hardware.',
+  'Functional testing and validation confirm the product works in the field, not just on the bench, before deployment.',
+];
+const stages = journey.map((s, i) => ({ ...s, text: copy[i] }));
+
+// Block diagram (stages 1–2)
+const blocks = [
+  { id: 'MCU', x: 250, y: 180, w: 100, h: 80 },
+  { id: 'SENSORS', x: 90, y: 90, w: 120, h: 56 },
+  { id: 'RADIO', x: 390, y: 90, w: 120, h: 56 },
+  { id: 'POWER', x: 90, y: 294, w: 120, h: 56 },
+  { id: 'I/O', x: 390, y: 294, w: 120, h: 56 },
+];
+const links = [
+  { d: 'M210 118 H230 V200 H250', label: 'I²C', lx: 214, ly: 160 },
+  { d: 'M390 118 H370 V200 H350', label: 'SPI', lx: 360, ly: 160 },
+  { d: 'M210 322 H230 V240 H250', label: 'PWR', lx: 206, ly: 286 },
+  { d: 'M390 322 H370 V240 H350', label: 'UART', lx: 356, ly: 286 },
+];
+// PCB traces (stage 3+)
+const traces = [
+  'M262 200 H222 V122 H182', 'M262 214 H206 V140 H160', 'M338 200 H378 V122 H420', 'M338 214 H394 V146 H440',
+  'M282 262 V318 H166', 'M296 262 V300 H190 V330', 'M318 262 V326 H432', 'M304 262 V290 H460 V318',
+  'M300 178 V134', 'M262 236 H120 V250', 'M338 236 H480 V230', 'M484 118 H520 V96',
+];
+const pads = [[182, 122], [160, 140], [420, 122], [440, 146], [166, 318], [190, 330], [432, 326], [460, 318], [120, 250], [480, 230]];
+---
+<section id="story" class="story on-dark relative bg-ink-950" aria-labelledby="story-title" style="--stages: 6">
+  <div class="story-sticky">
+    <div class="bg-grid absolute inset-0 opacity-40" aria-hidden="true"></div>
+    <div class="container-x story-grid relative">
+      <!-- Text column -->
+      <div class="story-text">
+        <p class="eyebrow">How we work</p>
+        <h2 id="story-title" class="mt-4 max-w-md font-display text-3xl font-semibold tracking-[-0.03em] text-white sm:text-4xl lg:text-5xl">
+          Your engineering partner at every stage
+        </h2>
+
+        <div class="story-progress mt-8" aria-hidden="true">
+          <span class="font-mono text-sm text-copper-400"><span class="story-count">01</span> <span class="text-fg-muted">/ 06</span></span>
+          <div class="story-rail"><span class="story-fill"></span></div>
+        </div>
+
+        <ol class="story-steps mt-6">
+          {stages.map((s, i) => (
+            <li class="story-step" data-step={i}>
+              <button type="button" class="story-jump" data-jump={i} tabindex="-1">
+                <span class="font-mono text-xs text-copper-400">{String(i + 1).padStart(2, '0')}</span>
+                <span class="story-step-title">{s.title}</span>
+              </button>
+              <p class="story-step-text">{s.text}</p>
+            </li>
+          ))}
+        </ol>
+      </div>
+
+      <!-- Board column -->
+      <div class="story-visual">
+        <div class="story-frame">
+          <svg viewBox="0 0 600 440" class="h-auto w-full" role="img" aria-label="A circuit board being built stage by stage, from block diagram to finished, tested board">
+            <defs>
+              <pattern id="sg" width="20" height="20" patternUnits="userSpaceOnUse"><path d="M20 0H0V20" fill="none" stroke="#1b3150" stroke-width="0.6" /></pattern>
+              <radialGradient id="sglow" cx=".5" cy=".5" r=".5"><stop offset="0" stop-color="#22d3ee" stop-opacity=".35" /><stop offset="1" stop-color="#22d3ee" stop-opacity="0" /></radialGradient>
+              <linearGradient id="smcu" x1="0" y1="0" x2="1" y2="1"><stop offset="0" stop-color="#1b3150" /><stop offset="1" stop-color="#0a1628" /></linearGradient>
+            </defs>
+            <rect width="600" height="440" fill="url(#sg)" />
+
+            <!-- Stage 1: concept sketch -->
+            <g class="g" data-only="0">
+              {blocks.map((b) => (
+                <g>
+                  <rect x={b.x} y={b.y} width={b.w} height={b.h} rx="10" fill="none" stroke="#94a3b8" stroke-width="1.6" stroke-dasharray="6 6" />
+                  <text x={b.x + b.w / 2} y={b.y + b.h / 2 + 5} text-anchor="middle" class="lbl" fill="#cbd5e1">{b.id}?</text>
+                </g>
+              ))}
+              {links.map((l) => <path d={l.d} fill="none" stroke="#64748b" stroke-width="1.4" stroke-dasharray="4 6" />)}
+              <g transform="translate(380 378) rotate(-4)">
+                <rect width="176" height="40" rx="4" fill="#f59e5b" opacity=".9" />
+                <text x="12" y="25" class="lbl" fill="#0a1628">REQUIREMENTS v0.1</text>
+              </g>
+            </g>
+
+            <!-- Stage 2: architecture -->
+            <g class="g" data-only="1">
+              {links.map((l) => (
+                <g><path d={l.d} fill="none" stroke="#22d3ee" stroke-width="2" /><text x={l.lx} y={l.ly} class="lbl-sm" fill="#67e8f9">{l.label}</text></g>
+              ))}
+              {blocks.map((b) => (
+                <g>
+                  <rect x={b.x} y={b.y} width={b.w} height={b.h} rx="10" fill="#11223b" stroke="#22d3ee" stroke-width="1.6" />
+                  <text x={b.x + b.w / 2} y={b.y + b.h / 2 + 5} text-anchor="middle" class="lbl" fill="#e2e8f0">{b.id}</text>
+                </g>
+              ))}
+            </g>
+
+            <!-- Stage 3+: PCB -->
+            <g class="g" data-from="2">
+              <rect x="50" y="40" width="500" height="360" rx="24" fill="#0d1d33" stroke="#2a4468" stroke-width="1.5" />
+              <circle cx="300" cy="220" r="170" fill="url(#sglow)" class="glow" />
+              {[[74, 64], [526, 64], [74, 376], [526, 376]].map(([x, y]) => <circle cx={x} cy={y} r="8" fill="none" stroke="#2a4468" stroke-width="2.4" />)}
+              <g fill="none" stroke="#c2611f" stroke-width="2.6" stroke-linecap="round" stroke-linejoin="round">
+                {traces.map((d, i) => <path d={d} pathLength="100" class="trace-draw" style={`transition-delay:${i * 60}ms`} />)}
+              </g>
+              <g class="pads">
+                {pads.map(([x, y]) => <g><circle cx={x} cy={y} r="6.5" fill="#0d1d33" stroke="#f59e5b" stroke-width="2.2" /><circle cx={x} cy={y} r="2" fill="#f59e5b" /></g>)}
+              </g>
+              <path d="M484 96 h12 v-14 h12 v14 h12 v-14 h12" fill="none" stroke="#c2611f" stroke-width="2.4" class="trace-draw" pathLength="100" />
+              <!-- silkscreen footprints -->
+              <g fill="none" stroke="#475569" stroke-width="1.2" stroke-dasharray="3 3" class="pads">
+                <rect x="256" y="174" width="88" height="92" rx="6" /><rect x="128" y="100" width="52" height="42" rx="4" /><rect x="414" y="96" width="70" height="60" rx="4" />
+                <rect x="128" y="296" width="48" height="38" rx="4" /><rect x="410" y="306" width="86" height="32" rx="4" /><rect x="282" y="118" width="36" height="20" rx="4" />
+              </g>
+              <g class="pads" font-family="var(--font-mono)" font-size="9" fill="#64748b"><text x="258" y="170">U1</text><text x="130" y="96">U2</text><text x="416" y="92">U3</text><text x="130" y="292">U4</text><text x="412" y="302">J1</text></g>
+              <text x="70" y="390" class="lbl-sm" fill="#475569">NANOFAB · REV A</text>
+            </g>
+
+            <!-- Stage 4+: components -->
+            <g class="g comps" data-from="3">
+              <g class="drop" style="--d:0ms">
+                {Array.from({ length: 5 }).map((_, i) => (
+                  <>
+                    <rect x={270 + i * 13} y="171" width="5" height="9" rx="1" fill="#94a3b8" /><rect x={270 + i * 13} y="260" width="5" height="9" rx="1" fill="#94a3b8" />
+                    <rect x="253" y={190 + i * 13} width="9" height="5" rx="1" fill="#94a3b8" /><rect x="338" y={190 + i * 13} width="9" height="5" rx="1" fill="#94a3b8" />
+                  </>
+                ))}
+                <rect x="262" y="180" width="76" height="80" rx="8" fill="url(#smcu)" stroke="#22d3ee" stroke-opacity=".6" />
+                <text x="300" y="225" text-anchor="middle" class="lbl" fill="#e2e8f0">MCU</text>
+                <circle cx="272" cy="190" r="2.5" fill="#f59e5b" />
+              </g>
+              <g class="drop" style="--d:120ms"><rect x="132" y="104" width="44" height="34" rx="4" fill="#1b3150" stroke="#475569" /><text x="154" y="125" text-anchor="middle" class="lbl-xs" fill="#94a3b8">SNS</text></g>
+              <g class="drop" style="--d:220ms"><rect x="418" y="100" width="62" height="52" rx="5" fill="#cbd5e1" /><rect x="424" y="106" width="50" height="40" rx="3" fill="#94a3b8" /><text x="449" y="131" text-anchor="middle" class="lbl-xs" fill="#0a1628">RF</text></g>
+              <g class="drop" style="--d:320ms"><rect x="132" y="300" width="40" height="30" rx="4" fill="#1b3150" stroke="#475569" /><text x="152" y="319" text-anchor="middle" class="lbl-xs" fill="#94a3b8">PMIC</text></g>
+              <g class="drop" style="--d:420ms"><rect x="414" y="310" width="78" height="24" rx="3" fill="#0a1628" stroke="#475569" />{Array.from({ length: 6 }).map((_, i) => <circle cx={424 + i * 12} cy="322" r="3.2" fill="#f59e5b" />)}</g>
+              <g class="drop" style="--d:500ms"><rect x="286" y="122" width="28" height="12" rx="6" fill="#cbd5e1" /></g>
+              <g class="drop" style="--d:560ms">
+                {[[196, 160], [214, 160], [380, 160], [398, 160], [230, 300], [360, 300], [104, 230], [490, 210]].map(([x, y]) => <rect x={x} y={y} width="12" height="7" rx="1.5" fill="#a16207" stroke="#facc15" stroke-opacity=".4" />)}
+              </g>
+              <!-- status LEDs -->
+              <g class="drop" style="--d:620ms"><circle class="led" cx="470" cy="360" r="5" /><circle class="led led-2" cx="490" cy="360" r="5" /></g>
+            </g>
+
+            <!-- Stage 6: live signals + RF waves -->
+            <g class="g" data-from="5">
+              <g fill="none" stroke="#67e8f9" stroke-width="2.8" stroke-linecap="round" stroke-linejoin="round" class="pulses">
+                {traces.map((d, i) => <path d={d} pathLength="100" style={`animation-delay:${(i * 0.29).toFixed(2)}s`} />)}
+              </g>
+              {[18, 32, 46].map((r, i) => <path d={`M${520 - r} ${70 - r * 0.2} A ${r} ${r} 0 0 1 ${520 + r} ${70 - r * 0.2}`} fill="none" stroke="#22d3ee" stroke-width="2" class="wave" style={`animation-delay:${i * 0.3}s`} />)}
+            </g>
+          </svg>
+
+          <!-- Stage 5+: firmware terminal -->
+          <div class="term" data-from="4" aria-hidden="true">
+            <div class="flex items-center gap-1.5 border-b border-white/10 px-3 py-2"><span class="size-2 rounded-full bg-red-400/70"></span><span class="size-2 rounded-full bg-amber-400/70"></span><span class="size-2 rounded-full bg-emerald-400/70"></span><span class="ml-2 text-fg-subtle">firmware</span></div>
+            <div class="space-y-1 px-3 py-2.5">
+              <p class="ln" style="--d:0ms"><span class="text-signal-400">$</span> make flash TARGET=rev_a</p>
+              <p class="ln" style="--d:250ms"><span class="text-fg-subtle">›</span> init clocks, i2c, spi, uart</p>
+              <p class="ln" style="--d:500ms"><span class="text-fg-subtle">›</span> sensors online · radio linked</p>
+              <div class="ln mt-1.5 h-1.5 overflow-hidden rounded-full bg-white/10" style="--d:700ms"><span class="flash block h-full bg-signal-400"></span></div>
+            </div>
+          </div>
+
+          <!-- Stage 6: test results -->
+          <div class="pass" data-from="5" aria-hidden="true">
+            <span class="size-2 rounded-full bg-emerald-400 shadow-[0_0_10px] shadow-emerald-400"></span>
+            Functional test · <strong class="text-emerald-300">PASS</strong>
+          </div>
+        </div>
+      </div>
+    </div>
+  </div>
+</section>
+
+<style>
+  .lbl { font: 600 13px var(--font-mono); letter-spacing: .04em; }
+  .lbl-sm { font: 500 10px var(--font-mono); letter-spacing: .08em; }
+  .lbl-xs { font: 600 9px var(--font-mono); }
+
+  /* ---------- Static (default / no-JS / reduced motion) ---------- */
+  .story-sticky { position: relative; padding: 6rem 0; overflow: hidden; }
+  .story-grid { display: grid; gap: 3rem; align-items: center; }
+  @media (min-width: 1024px) { .story-grid { grid-template-columns: 5fr 7fr; gap: 4rem; } }
+  .story-progress, .story-jump .story-step-title + * { display: none; }
+  .story-steps { display: grid; gap: 1.25rem; }
+  .story-jump { display: flex; gap: .75rem; align-items: baseline; text-align: left; color: #fff; font-weight: 600; cursor: default; }
+  .story-step-text { margin: .35rem 0 0 2.1rem; font-size: .925rem; line-height: 1.6; color: #94a3b8; }
+  .story-frame { position: relative; border-radius: 1.75rem; border: 1px solid rgb(255 255 255 / .08); background: rgb(255 255 255 / .02); padding: .75rem; box-shadow: 0 40px 80px -40px rgb(0 0 0 / .8); }
+  .term { position: absolute; left: -1.75rem; bottom: -1.75rem; width: min(17rem, 55%); border-radius: .75rem; border: 1px solid rgb(255 255 255 / .1);
+    background: rgb(5 12 24 / .92); font: 500 11px/1.5 var(--font-mono); color: #cbd5e1; backdrop-filter: blur(6px); box-shadow: 0 20px 40px -10px rgb(0 0 0 / .6); }
+  .pass { position: absolute; left: 1.25rem; top: 1.25rem; display: inline-flex; align-items: center; gap: .5rem; border-radius: 999px; border: 1px solid rgb(52 211 153 / .3);
+    background: rgb(5 12 24 / .9); padding: .4rem .8rem; font: 500 11px var(--font-mono); color: #cbd5e1; }
+  .led { fill: #22c55e; filter: drop-shadow(0 0 6px #22c55e); }
+  .flash { width: 100%; }
+  .pulses path { stroke-dasharray: 8 92; stroke-dashoffset: 100; animation: pulse 3s linear infinite; }
+  .wave { animation: wave 2.4s ease-out infinite; transform-origin: 520px 70px; opacity: 0; }
+  @keyframes pulse { to { stroke-dashoffset: 0; } }
+  @keyframes wave { 0% { opacity: 0; transform: scale(.7); } 30% { opacity: .9; } 100% { opacity: 0; transform: scale(1.15); } }
+  /* Only animate signals when they are visible */
+  .story.is-live:not([data-stage='5']) .pulses path, .story.is-live:not([data-stage='5']) .wave { animation-play-state: paused; }
+  @media (prefers-reduced-motion: reduce) { .pulses, .wave { display: none; } }
+  /* Static mode shows the finished board only */
+  .story:not(.is-live) [data-only] { display: none; }
+
+  /* ---------- Live (scroll-driven) ---------- */
+  .story.is-live { height: calc(var(--stages) * 65vh + 100vh); }
+  .story.is-live .story-sticky { position: sticky; top: 0; height: 100svh; padding: 0; display: flex; align-items: center; }
+  .story.is-live .story-progress { display: flex; align-items: center; gap: 1rem; }
+  .story-rail { position: relative; height: 2px; flex: 1; max-width: 16rem; background: rgb(255 255 255 / .1); border-radius: 2px; overflow: hidden; }
+  .story-fill { position: absolute; inset: 0; transform-origin: left; transform: scaleX(var(--p, 0)); background: linear-gradient(90deg, var(--color-signal-400), var(--color-copper-400)); }
+  .story.is-live .story-steps { position: relative; display: block; min-height: 15rem; }
+  .story.is-live .story-step { position: absolute; inset: 0 0 auto 0; opacity: 0; transform: translateY(16px); transition: opacity .45s ease, transform .45s ease; pointer-events: none; }
+  .story.is-live .story-step.on { opacity: 1; transform: none; pointer-events: auto; }
+  .story.is-live .story-jump { font-family: var(--font-display); font-size: clamp(1.5rem, 2.4vw, 2.1rem); line-height: 1.15; letter-spacing: -.02em; }
+  .story.is-live .story-step-text { margin-left: 0; margin-top: 1rem; font-size: 1.05rem; max-width: 30rem; }
+  .story.is-live .story-jump .font-mono { display: none; }
+
+  .story.is-live .g, .story.is-live .term, .story.is-live .pass { opacity: 0; transition: opacity .6s ease; }
+  .story.is-live .g.on, .story.is-live .term.on, .story.is-live .pass.on { opacity: 1; }
+  .story.is-live .trace-draw { stroke-dasharray: 100; stroke-dashoffset: 100; transition: stroke-dashoffset 1.1s ease; }
+  .story.is-live [data-from='2'].on .trace-draw { stroke-dashoffset: 0; }
+  .story.is-live .pads { opacity: 0; transition: opacity .5s ease .7s; }
+  .story.is-live [data-from='2'].on .pads { opacity: 1; }
+  .story.is-live .drop { opacity: 0; transform: translateY(-26px); transition: opacity .45s ease, transform .55s cubic-bezier(.3,1.4,.5,1); transition-delay: var(--d); }
+  .story.is-live .comps.on .drop { opacity: 1; transform: none; }
+  .story.is-live .led { fill: #334155; filter: none; transition: fill .4s, filter .4s; }
+  .story.is-live[data-stage='5'] .led { fill: #22c55e; filter: drop-shadow(0 0 6px #22c55e); }
+  .story.is-live .glow { opacity: .35; transition: opacity .8s; }
+  .story.is-live[data-stage='5'] .glow { opacity: 1; }
+  .story.is-live .ln { opacity: 0; transform: translateX(-6px); transition: opacity .3s ease, transform .3s ease; transition-delay: var(--d); }
+  .story.is-live .term.on .ln { opacity: 1; transform: none; }
+  .story.is-live .flash { width: 0; transition: width 1.4s ease .8s; }
+  .story.is-live .term.on .flash { width: 100%; }
+  .story.is-live .drop, .story.is-live .comps .drop rect { transform-box: fill-box; }
+
+  @media (max-width: 1023px) {
+    .story.is-live .story-sticky { align-items: flex-start; padding-top: 5rem; }
+    .story.is-live .story-grid { gap: 1.5rem; }
+    .story.is-live .story-visual { order: -1; }
+    .story.is-live .story-text h2, .story.is-live .story-text .eyebrow { display: none; }
+    .story.is-live .story-steps { min-height: 11rem; }
+    .story.is-live .story-step-text { font-size: .95rem; }
+    .term { width: 56%; font-size: 9px; left: .5rem; bottom: -2.25rem; }
+    .pass { left: .75rem; top: .75rem; font-size: 10px; }
+  }
+</style>
+
+<script>
+  const story = document.querySelector<HTMLElement>('.story');
+  if (story && !matchMedia('(prefers-reduced-motion: reduce)').matches) {
+    story.classList.add('is-live');
+    const N = 6;
+    const steps = [...story.querySelectorAll<HTMLElement>('.story-step')];
+    const only = [...story.querySelectorAll<SVGElement>('[data-only]')];
+    const from = [...story.querySelectorAll<HTMLElement | SVGElement>('[data-from]')];
+    const count = story.querySelector('.story-count')!;
+    let current = -1;
+
+    const setStage = (s: number) => {
+      if (s === current) return;
+      current = s;
+      story.dataset.stage = String(s);
+      steps.forEach((el, i) => el.classList.toggle('on', i === s));
+      only.forEach((el) => el.classList.toggle('on', Number(el.dataset.only) === s));
+      from.forEach((el) => el.classList.toggle('on', s >= Number(el.dataset.from)));
+      count.textContent = String(s + 1).padStart(2, '0');
+    };
+    const progress = () => {
+      const r = story.getBoundingClientRect();
+      return Math.min(1, Math.max(0, -r.top / (r.height - innerHeight)));
+    };
+    const update = () => {
+      const p = progress();
+      story.style.setProperty('--p', p.toFixed(3));
+      setStage(Math.min(N - 1, Math.floor(p * N)));
+    };
+    update();
+    addEventListener('scroll', () => requestAnimationFrame(update), { passive: true });
+    addEventListener('resize', update);
+
+    // Clicking a step title scrolls to that stage.
+    story.querySelectorAll<HTMLButtonElement>('[data-jump]').forEach((b) =>
+      b.addEventListener('click', () => {
+        const i = Number(b.dataset.jump);
+        const top = story.getBoundingClientRect().top + scrollY;
+        scrollTo({ top: top + ((i + 0.5) / N) * (story.offsetHeight - innerHeight), behavior: 'smooth' });
+      }),
+    );
+  }
+</script>

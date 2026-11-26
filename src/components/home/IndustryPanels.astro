@@ -1,0 +1,49 @@
+---
+import Icon from '../Icon.astro';
+import { industries } from '@/data/site';
+---
+<section class="cv-auto section on-dark relative overflow-hidden bg-ink-900" data-spotlight>
+  <div class="bg-grid absolute inset-0 opacity-40" aria-hidden="true"></div>
+  <div class="container-x relative">
+    <div class="flex flex-col justify-between gap-6 md:flex-row md:items-end">
+      <div class="max-w-2xl" data-reveal>
+        <p class="eyebrow">Industries</p>
+        <h2 class="h-section mt-3 text-white">Engineering solutions across industries</h2>
+      </div>
+      <a href="/industries" class="btn btn-outline shrink-0">All industries</a>
+    </div>
+
+    <ul class="panels mt-12 grid gap-3 sm:grid-cols-2 lg:flex lg:h-[26rem]">
+      {industries.map((ind, i) => (
+        <li class="panel">
+          <a href="/industries" class="group relative flex h-full flex-col justify-between overflow-hidden rounded-card border border-white/10 bg-white/[0.03] p-6 transition hover:border-signal-400/40 focus-visible:border-signal-400">
+            <Icon name={ind.icon} class="watermark absolute -right-6 -bottom-6 size-40 text-white/[0.04]" strokeWidth={1} />
+            <div class="flex items-start justify-between gap-3">
+              <span class="icon-tile"><Icon name={ind.icon} class="size-5" /></span>
+              <span class="num font-mono text-xs text-fg-subtle">{String(i + 1).padStart(2, '0')}</span>
+            </div>
+            <span class="vtitle font-display text-lg font-semibold text-white">{ind.title}</span>
+            <div class="detail mt-6">
+              <h3 class="font-display text-2xl text-white">{ind.title}</h3>
+              <p class="mt-2 text-sm leading-relaxed text-fg-muted">{ind.text}</p>
+            </div>
+          </a>
+        </li>
+      ))}
+    </ul>
+  </div>
+</section>
+<style>
+  .vtitle { display: none; }
+  @media (min-width: 1024px) {
+    .panel { flex: 1 1 0; min-width: 0; transition: flex-grow .5s cubic-bezier(.2,.7,.2,1); }
+    .panels:not(:hover):not(:focus-within) .panel:first-child, .panel:hover, .panel:focus-within { flex-grow: 5; }
+    .vtitle { display: block; writing-mode: vertical-rl; transform: rotate(180deg); white-space: nowrap; opacity: .8; transition: opacity .3s; }
+    .detail { opacity: 0; transform: translateY(8px); transition: opacity .3s, transform .3s; min-width: 16rem; }
+    .panels:not(:hover):not(:focus-within) .panel:first-child .detail, .panel:hover .detail, .panel:focus-within .detail { opacity: 1; transform: none; transition-delay: .15s; }
+    .num { display: none; }
+    .panels:not(:hover):not(:focus-within) .panel:first-child .num, .panel:hover .num, .panel:focus-within .num { display: inline; }
+    .panels:not(:hover):not(:focus-within) .panel:first-child .vtitle, .panel:hover .vtitle, .panel:focus-within .vtitle { display: none; }
+  }
+  @media (prefers-reduced-motion: reduce) { .panel, .detail { transition: none !important; } }
+</style>

@@ -1,0 +1,36 @@
+---
+// Cookie consent banner, rendered only when GA4 analytics is configured.
+const enabled = (import.meta.env.PUBLIC_ANALYTICS ?? '').toLowerCase() === 'ga4' && !!import.meta.env.PUBLIC_GA4_ID;
+---
+{enabled && (
+  <div id="consent" class="fixed inset-x-3 bottom-3 z-[70] mx-auto hidden max-w-3xl rounded-card border border-line bg-surface p-5 shadow-2xl shadow-ink-950/20 sm:inset-x-6 sm:bottom-6" role="dialog" aria-labelledby="consent-title" aria-live="polite">
+    <div class="flex flex-col gap-4 sm:flex-row sm:items-center">
+      <div class="flex-1 text-sm text-fg-muted">
+        <p id="consent-title" class="font-semibold text-fg">Analytics cookies</p>
+        <p class="mt-1">We'd like to use Google Analytics cookies to understand how our website is used. They are only set if you accept. See our <a href="/privacy-policy#cookies" class="text-accent underline">Privacy Policy</a>.</p>
+      </div>
+      <div class="flex shrink-0 gap-2">
+        <button type="button" data-consent="denied" class="btn btn-outline btn-sm">Decline</button>
+        <button type="button" data-consent="granted" class="btn btn-primary btn-sm">Accept</button>
+      </div>
+    </div>
+  </div>
+)}
+<script>
+  const box = document.getElementById('consent');
+  if (box) {
+    const get = () => { try { return localStorage.getItem('nf-consent'); } catch { return null; } };
+    const open = () => box.classList.remove('hidden');
+    if (!get()) open();
+    box.querySelectorAll<HTMLButtonElement>('[data-consent]').forEach((b) =>
+      b.addEventListener('click', () => {
+        const v = b.dataset.consent!;
+        try { localStorage.setItem('nf-consent', v); } catch {}
+        box.classList.add('hidden');
+        if (v === 'granted') (window as any).nfLoadGA?.();
+        else if ((window as any).__gaLoaded) location.reload(); // stop an already-loaded GA session
+      }),
+    );
+    document.querySelectorAll('[data-cookie-settings]').forEach((el) => el.addEventListener('click', (e) => { e.preventDefault(); open(); }));
+  }
+</script>

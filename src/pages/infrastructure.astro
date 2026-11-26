@@ -1,0 +1,107 @@
+---
+import BaseLayout from '@/layouts/BaseLayout.astro';
+import PageHero from '@/components/PageHero.astro';
+import Icon from '@/components/Icon.astro';
+import SectionHeader from '@/components/SectionHeader.astro';
+import CTABand from '@/components/CTABand.astro';
+import { streetLightingFeatures } from '@/data/site';
+
+// Illustrative dashboard grid: 1 = on, 0 = off/dimmed, 2 = needs attention
+const grid = [1,1,1,0,1,1,1,1, 1,1,2,1,1,1,0,1, 1,1,1,1,1,1,1,1, 0,1,1,1,1,2,1,1];
+const layers = [
+  { icon: 'Lamp', title: 'Smart light controllers', text: 'Embedded electronics at each luminaire for switching, dimming and status sensing.' },
+  { icon: 'RadioTower', title: 'IoT connectivity', text: 'Wireless communication links every node back to the central system.' },
+  { icon: 'LayoutDashboard', title: 'Centralized dashboard', text: 'One integrated view for monitoring, control and operational visibility.' },
+];
+---
+<BaseLayout title="Smart Street Lighting & Infrastructure" description="Nanofab Infrastructure: smart street lighting with centralized monitoring and control through an integrated IoT dashboard.">
+  <PageHero
+    photo="street-lamp-dusk.jpg"
+    eyebrow="Nanofab Infrastructure"
+    title="Intelligent Infrastructure. Connected Control."
+    lead="Nanofab develops intelligent infrastructure solutions that combine embedded electronics, IoT connectivity and centralized monitoring."
+    crumbs={[{ label: 'Infrastructure' }]}
+  />
+
+  <section class="section">
+    <div class="container-x grid items-center gap-12 lg:grid-cols-2">
+      <div data-reveal>
+        <p class="eyebrow">Smart Street Lighting Solutions</p>
+        <h2 class="h-section mt-3">Every streetlight, visible and controllable from one place.</h2>
+        <p class="lead mt-5">
+          Our smart street lighting solution enables centralized monitoring and control of street lighting infrastructure through an integrated dashboard.
+        </p>
+        <a href="/contact" class="btn btn-primary mt-8">Explore Our Infrastructure Solutions <Icon name="ArrowRight" class="size-4" /></a>
+      </div>
+
+      <!-- Illustrative dashboard -->
+      <figure class="on-dark rounded-panel border border-ink-700 bg-ink-900 p-5 shadow-2xl shadow-ink-900/30 sm:p-6" data-reveal>
+        <div class="flex items-center justify-between">
+          <div class="flex items-center gap-2">
+            <span class="size-2.5 rounded-full bg-emerald-400 shadow-[0_0_10px] shadow-emerald-400"></span>
+            <span class="font-mono text-xs text-fg-muted">Lighting Control Dashboard</span>
+          </div>
+          <span class="rounded-md bg-white/5 px-2 py-1 font-mono text-[0.65rem] text-fg-subtle">Zone A · Live</span>
+        </div>
+        <div class="mt-5 grid grid-cols-3 gap-3">
+          {[['Online', 'emerald'], ['Dimmed', 'slate'], ['Alerts', 'copper']].map(([l, c]) => (
+            <div class="rounded-xl bg-white/[0.04] p-3">
+              <p class="text-[0.65rem] tracking-wider text-fg-subtle uppercase">{l}</p>
+              <div class:list={['mt-2 h-1.5 rounded-full', c === 'emerald' ? 'bg-emerald-400/70 w-4/5' : c === 'slate' ? 'bg-fg-subtle w-1/4' : 'bg-copper-400 w-1/12']}></div>
+            </div>
+          ))}
+        </div>
+        <div class="mt-4 grid grid-cols-8 gap-2 rounded-xl bg-white/[0.03] p-4">
+          {grid.map((s) => (
+            <span
+              class:list={[
+                'aspect-square rounded-md',
+                s === 1 && 'bg-signal-400/80 shadow-[0_0_12px] shadow-signal-400/50',
+                s === 0 && 'bg-ink-700',
+                s === 2 && 'animate-pulse bg-copper-400',
+              ]}
+            ></span>
+          ))}
+        </div>
+        <figcaption class="mt-3 text-right font-mono text-[0.65rem] text-fg-subtle">Illustrative interface</figcaption>
+      </figure>
+    </div>
+  </section>
+
+  <section class="section bg-surface-2">
+    <div class="container-x">
+      <SectionHeader center eyebrow="Key Features" title="Built for connected cities and campuses" />
+      <div class="mt-12 grid gap-4 sm:grid-cols-2 lg:grid-cols-5">
+        {streetLightingFeatures.map((f) => (
+          <div class="card text-center" data-reveal>
+            <span class="icon-tile mx-auto flex size-12"><Icon name={f.icon} class="size-6" /></span>
+            <p class="mt-4 font-semibold text-fg">{f.title}</p>
+          </div>
+        ))}
+      </div>
+    </div>
+  </section>
+
+  <section class="section">
+    <div class="container-x">
+      <SectionHeader eyebrow="How it fits together" title="Embedded electronics + IoT + centralized monitoring" />
+      <ol class="mt-12 grid gap-5 md:grid-cols-3">
+        {layers.map((l, i) => (
+          <li class="card relative" data-reveal>
+            <span class="font-mono text-sm font-semibold text-accent-2">{String(i + 1).padStart(2, '0')}</span>
+            <span class="icon-tile mt-4 flex"><Icon name={l.icon} class="size-6" /></span>
+            <h3 class="mt-4 text-lg">{l.title}</h3>
+            <p class="mt-2 text-sm text-fg-muted">{l.text}</p>
+          </li>
+        ))}
+      </ol>
+    </div>
+  </section>
+
+  <CTABand
+    title="Explore our infrastructure solutions."
+    text="Talk to us about smart lighting and connected infrastructure for your municipality, campus or facility."
+    primary={{ label: 'Contact Our Team', href: '/contact' }}
+    secondary={{ label: 'See IoT Services', href: '/services#iot' }}
+  />
+</BaseLayout>

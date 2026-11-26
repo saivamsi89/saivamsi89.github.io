@@ -1,0 +1,91 @@
+---
+import LegalLayout from '@/layouts/LegalLayout.astro';
+import Fill from '@/components/Fill.astro';
+import { site } from '@/data/site';
+const L = site.legal;
+const toc = [
+  ['about', 'About these terms'], ['use', 'Using the website'], ['uploads', 'Files you upload'], ['quotes', 'Enquiries and quotations'],
+  ['products', 'Product information'], ['ip', 'Intellectual property'], ['links', 'Third-party links'], ['liability', 'Limitation of liability'],
+  ['indemnity', 'Indemnity'], ['law', 'Governing law'], ['general', 'General'], ['contact', 'Contact'],
+].map(([id, label]) => ({ id, label }));
+---
+<LegalLayout title="Terms & Conditions" description="Terms and conditions for using the Nanofab Innovations website, uploading files and requesting quotations." toc={toc}>
+  <h2 id="about">1. About these terms</h2>
+  <p>
+    These Terms &amp; Conditions ("<strong>Terms</strong>") govern your use of this website, operated by {site.legalName}
+    (CIN: <Fill value={L.cin} label="CIN" />), with its registered office at <Fill value={L.registeredAddress} label="Registered address" />
+    ("<strong>Nanofab</strong>", "<strong>we</strong>", "<strong>us</strong>"). By using the website, you agree to these Terms. If you use it on behalf of an
+    organisation, you confirm you are authorised to accept these Terms for it.
+  </p>
+
+  <h2 id="use">2. Using the website</h2>
+  <p>You agree not to:</p>
+  <ul>
+    <li>use the website for any unlawful purpose or in breach of these Terms;</li>
+    <li>attempt to gain unauthorised access to, interfere with, or disrupt the website or its servers;</li>
+    <li>upload viruses, malware or any harmful or malicious code;</li>
+    <li>submit false information or impersonate any person or organisation; or</li>
+    <li>scrape, copy or republish website content in bulk without our written permission.</li>
+  </ul>
+
+  <h2 id="uploads">3. Files you upload</h2>
+  <ul>
+    <li>You keep ownership of all designs, BOMs and other files you submit ("<strong>Customer Files</strong>").</li>
+    <li>You confirm you have the right to share Customer Files with us, and that doing so does not infringe anyone else's rights or breach any confidentiality obligation.</li>
+    <li>You grant us a limited, non-exclusive licence to use Customer Files only to evaluate your request, prepare quotations and, if you engage us, perform the work.</li>
+    <li>We handle Customer Files as confidential, as described in our <a href="/privacy-policy">Privacy Policy</a>. If you need a signed Non-Disclosure Agreement, ask us before uploading.</li>
+    <li>You are responsible for the accuracy of Customer Files. Reviewing them for a quotation does not mean we have verified the design or its fitness for purpose.</li>
+  </ul>
+
+  <h2 id="quotes">4. Enquiries and quotations</h2>
+  <ul>
+    <li>Submitting an enquiry or BOM is a request for information or a quotation. It does not create a contract.</li>
+    <li>Quotations are estimates based on the information provided. They are valid for the period stated in the quotation and may change with component prices, availability, exchange rates or changes to your requirements.</li>
+    <li>Any order for products or services is governed by a separate written agreement, purchase order or our terms of sale. If those conflict with these Terms, they take precedence.</li>
+    <li>Unless agreed in writing, you are responsible for ensuring your product complies with the regulatory, safety and certification requirements of the markets where it will be sold or used.</li>
+  </ul>
+
+  <h2 id="products">5. Product information</h2>
+  <p>
+    Product descriptions, specifications, images and datasheets on this website are for general information. They may change without notice, and images
+    may be illustrative. Please confirm specifications with us before ordering. Prices shown, if any, are indicative unless confirmed in a quotation.
+  </p>
+
+  <h2 id="ip">6. Intellectual property</h2>
+  <p>
+    The website and its content, including text, graphics, logos, illustrations and code, are owned by or licensed to Nanofab and protected by intellectual
+    property laws. You may view and print pages for your own business use. Any other use requires our prior written consent. "Nanofab" and our logo may not
+    be used without permission.
+  </p>
+
+  <h2 id="links">7. Third-party links</h2>
+  <p>The website may link to third-party sites. We do not control them and are not responsible for their content, policies or availability.</p>
+
+  <h2 id="liability">8. Disclaimer and limitation of liability</h2>
+  <p>
+    The website is provided "as is" and "as available". We do not guarantee that it will be uninterrupted or error-free. To the fullest extent permitted by law,
+    Nanofab is not liable for any indirect, incidental, special or consequential loss, or any loss of profit, revenue, data or goodwill, arising from use of the
+    website or reliance on its content. Nothing in these Terms limits liability that cannot be limited under applicable law.
+  </p>
+
+  <h2 id="indemnity">9. Indemnity</h2>
+  <p>
+    You agree to indemnify Nanofab against claims, losses and costs arising from your breach of these Terms or from Customer Files that infringe a third party's rights.
+  </p>
+
+  <h2 id="law">10. Governing law and jurisdiction</h2>
+  <p>
+    These Terms are governed by the laws of India. Subject to any dispute resolution clause in a separate agreement, the courts at
+    <Fill value={L.jurisdictionCity} label="City, State" /> have exclusive jurisdiction.
+  </p>
+
+  <h2 id="general">11. General</h2>
+  <ul>
+    <li>If any part of these Terms is found unenforceable, the rest remains in effect.</li>
+    <li>Our failure to enforce a provision is not a waiver of it.</li>
+    <li>We may update these Terms from time to time. The version on this page, with its "Last updated" date, applies from the date it is posted.</li>
+  </ul>
+
+  <h2 id="contact">12. Contact</h2>
+  <p>Questions about these Terms can be sent through our <a href="/contact">Contact page</a>{site.contact.email && <> or to <a href={`mailto:${site.contact.email}`}>{site.contact.email}</a></>}.</p>
+</LegalLayout>

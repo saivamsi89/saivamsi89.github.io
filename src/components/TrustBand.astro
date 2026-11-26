@@ -1,0 +1,35 @@
+---
+// Stats + client logos. Renders nothing until trust data exists.
+import { Image } from 'astro:assets';
+import { trust } from '@/data/site';
+import { clientLogos } from '@/lib/assets';
+const clients = trust.clients.filter((c) => clientLogos[c.logo]);
+const show = trust.stats.length > 0 || clients.length > 0;
+---
+{show && (
+  <section class="border-b border-line bg-surface py-12">
+    <div class="container-x">
+      {trust.stats.length > 0 && (
+        <dl class:list={['grid grid-cols-2 gap-6', trust.stats.length >= 4 ? 'md:grid-cols-4' : 'md:grid-cols-3']}>
+          {trust.stats.map((s) => (
+            <div class="text-center" data-reveal>
+              <dt class="sr-only">{s.label}</dt>
+              <dd class="text-3xl font-semibold tracking-tight text-fg sm:text-4xl">{s.value}</dd>
+              <dd class="mt-1 text-sm text-fg-subtle">{s.label}</dd>
+            </div>
+          ))}
+        </dl>
+      )}
+      {clients.length > 0 && (
+        <div class:list={[trust.stats.length > 0 && 'mt-12 border-t border-line pt-10']}>
+          <p class="text-center font-mono text-xs uppercase tracking-[0.18em] text-fg-subtle">Trusted by engineering teams at</p>
+          <ul class="mt-6 flex flex-wrap items-center justify-center gap-x-12 gap-y-6">
+            {clients.map((c) => (
+              <li><Image src={clientLogos[c.logo]} alt={c.name} height={72} class="h-9 w-auto opacity-60 grayscale transition hover:opacity-100 hover:grayscale-0" /></li>
+            ))}
+          </ul>
+        </div>
+      )}
+    </div>
+  </section>
+)}

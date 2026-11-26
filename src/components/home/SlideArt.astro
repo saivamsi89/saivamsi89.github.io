@@ -1,0 +1,313 @@
+---
+// Product-style illustrations for the hero banner slides (Nanofab's own artwork).
+interface Props { name: 'showcase' | 'boards' | 'iot' | 'lighting' | 'assembly' }
+const { name } = Astro.props;
+
+// Deterministic pseudo-random so the boards look "designed", not noisy
+const rnd = (seed: number) => () => ((seed = (seed * 16807) % 2147483647) / 2147483647);
+
+function board(mask: string, pad: string, seed: number) {
+  const r = rnd(seed);
+  const bga = [] as [number, number][];
+  for (let y = 0; y < 8; y++) for (let x = 0; x < 8; x++) bga.push([150 + x * 9, 190 + y * 9]);
+  const pins = Array.from({ length: 14 }, (_, i) => [28, 70 + i * 22]);
+  const pins2 = Array.from({ length: 14 }, (_, i) => [252, 70 + i * 22]);
+  const passives = Array.from({ length: 26 }, () => [60 + r() * 170, 60 + r() * 330, r() > 0.5 ? 1 : 0] as const);
+  const traces = Array.from({ length: 16 }, (_, i) => {
+    const y = 70 + i * 22; const x2 = 120 + r() * 40;
+    return `M34 ${y} H${x2} L${x2 + 12} ${y + 12} H${150 - 4}`;
+  });
+  return { bga, pins, pins2, passives, traces, mask, pad };
+}
+const b1 = board('#0f3b6b', '#e8c46a', 7);
+const b2 = board('#10141c', '#d9b35c', 19);
+---
+<div class:list={['art relative h-full w-full select-none', `art-${name}`]} aria-hidden="true">
+  {name === 'boards' && (
+    <div class="boards relative mx-auto h-full max-w-[40rem]">
+      {[b1, b2].map((b, k) => (
+        <div class:list={['brd absolute', k === 0 ? 'brd-1' : 'brd-2']}>
+          <svg viewBox="0 0 280 460" class="h-full w-full">
+            <defs>
+              <linearGradient id={`mask${k}`} x1="0" y1="0" x2="1" y2="1"><stop offset="0" stop-color={b.mask} /><stop offset="1" stop-color={k === 0 ? '#0a2a52' : '#07090d'} /></linearGradient>
+            </defs>
+            <rect x="4" y="4" width="272" height="452" rx="14" fill={`url(#mask${k})`} stroke="#ffffff14" />
+            {[[22, 22], [258, 22], [22, 438], [258, 438]].map(([x, y]) => <g><circle cx={x} cy={y} r="11" fill={b.pad} /><circle cx={x} cy={y} r="6" fill="#05080d" /></g>)}
+            <g fill="none" stroke={b.pad} stroke-opacity=".35" stroke-width="1.6">{b.traces.map((d) => <path d={d} />)}</g>
+            {b.pins.map(([x, y]) => <rect x={x - 6} y={y - 6} width="12" height="12" rx="2" fill={b.pad} />)}
+            {b.pins2.map(([x, y]) => <circle cx={x} cy={y} r="6" fill={b.pad} />)}
+            <rect x="140" y="180" width="82" height="82" rx="4" fill="none" stroke="#ffffff55" stroke-dasharray="3 3" />
+            {b.bga.map(([x, y]) => <circle cx={x} cy={y} r="2.6" fill={b.pad} />)}
+            <g>{[0, 1, 2, 3].map((i) => <rect x={60 + i * 34} y="300" width="22" height="22" rx="2" fill="#05080d" stroke={b.pad} stroke-opacity=".6" />)}</g>
+            <rect x="60" y="70" width="70" height="70" rx="4" fill="#05080d" stroke={b.pad} stroke-opacity=".5" />
+            {Array.from({ length: 10 }).map((_, i) => <><rect x={64 + i * 6.5} y="64" width="3" height="6" fill={b.pad} /><rect x={64 + i * 6.5} y="140" width="3" height="6" fill={b.pad} /></>)}
+            {b.passives.map(([x, y, v]) => <rect x={x} y={y} width={v ? 8 : 4} height={v ? 4 : 8} rx="1" fill={b.pad} opacity=".85" />)}
+            <text x="140" y="420" text-anchor="middle" font-family="var(--font-mono)" font-size="11" fill="#ffffffaa">NANOFAB · {k === 0 ? 'NF-HDI-8L' : 'NF-RF-4L'}</text>
+            <text x="230" y="60" font-family="var(--font-mono)" font-size="8" fill="#ffffff88">U1</text>
+            <text x="64" y="58" font-family="var(--font-mono)" font-size="8" fill="#ffffff88">U2</text>
+          </svg>
+        </div>
+      ))}
+      <!-- Magnified cross-section -->
+      <div class="lens absolute">
+        <svg viewBox="0 0 200 200" class="h-full w-full">
+          <defs><clipPath id="lensclip"><circle cx="100" cy="100" r="96" /></clipPath></defs>
+          <g clip-path="url(#lensclip)">
+            <rect width="200" height="200" fill="#f1d9a0" />
+            {[22, 56, 90, 124, 158].map((y, i) => <rect x="0" y={y} width="200" height={i % 2 ? 7 : 9} fill="#c8742d" />)}
+            {[44, 100, 156].map((x, i) => (
+              <g>
+                <rect x={x - 11} y={i === 1 ? 14 : 48} width="22" height={i === 1 ? 172 : 104} fill="#d88a3c" />
+                <rect x={x - 5} y={i === 1 ? 20 : 54} width="10" height={i === 1 ? 160 : 92} fill={i === 1 ? '#f6e3b4' : '#e2a159'} />
+                <rect x={x - 18} y={i === 1 ? 10 : 44} width="36" height="6" fill="#b5651f" />
+              </g>
+            ))}
+            <rect width="200" height="200" fill="url(#lensglare)" />
+          </g>
+          <defs><radialGradient id="lensglare" cx=".3" cy=".25" r=".8"><stop offset="0" stop-color="#fff" stop-opacity=".35" /><stop offset=".5" stop-color="#fff" stop-opacity="0" /></radialGradient></defs>
+          <circle cx="100" cy="100" r="97" fill="none" stroke="#22d3ee" stroke-width="5" />
+        </svg>
+        <span class="lens-tag absolute font-mono">Filled via · 8-layer stack-up</span>
+      </div>
+      <div class="cone absolute"></div>
+    </div>
+  )}
+
+  {name === 'iot' && (
+    <div class="relative mx-auto h-full max-w-[38rem]">
+      <svg viewBox="0 0 520 440" class="absolute inset-0 h-full w-full">
+        <defs>
+          <linearGradient id="enc" x1="0" y1="0" x2="0" y2="1"><stop offset="0" stop-color="#1b3150" /><stop offset="1" stop-color="#0a1628" /></linearGradient>
+          <radialGradient id="iotglow" cx=".5" cy=".5" r=".5"><stop offset="0" stop-color="#22d3ee" stop-opacity=".35" /><stop offset="1" stop-color="#22d3ee" stop-opacity="0" /></radialGradient>
+        </defs>
+        <circle cx="260" cy="230" r="200" fill="url(#iotglow)" />
+        {[70, 110, 150, 190].map((r, i) => <circle cx="260" cy="230" r={r} fill="none" stroke="#22d3ee" stroke-opacity={0.35 - i * 0.07} stroke-width="1.5" class="ring" style={`animation-delay:${i * .5}s`} />)}
+        <rect x="180" y="160" width="160" height="150" rx="28" fill="url(#enc)" stroke="#2a4468" stroke-width="2" />
+        <rect x="200" y="182" width="120" height="96" rx="10" fill="#0f3b6b" stroke="#e8c46a55" />
+        <rect x="240" y="208" width="40" height="40" rx="4" fill="#05080d" stroke="#e8c46a" stroke-opacity=".7" />
+        {[0, 1, 2, 3, 4, 5].map((i) => <><rect x={244 + i * 6} y="203" width="3" height="5" fill="#e8c46a" /><rect x={244 + i * 6} y="248" width="3" height="5" fill="#e8c46a" /></>)}
+        <path d="M208 196 h20 v10 h14 M300 262 h12 v-12 h8" stroke="#e8c46a" stroke-opacity=".6" fill="none" stroke-width="1.6" />
+        <rect x="290" y="192" width="22" height="14" rx="2" fill="#cbd5e1" />
+        <circle cx="214" cy="266" r="4" fill="#22c55e" class="blink" />
+        <rect x="314" y="110" width="8" height="58" rx="4" fill="#475569" /><circle cx="318" cy="106" r="7" fill="#94a3b8" />
+        <text x="260" y="296" text-anchor="middle" font-family="var(--font-mono)" font-size="10" fill="#94a3b8">NANOFAB · NODE</text>
+      </svg>
+      <div class="chip-card absolute top-[8%] left-[2%]"><span class="dot bg-emerald-400"></span>Sensor online</div>
+      <div class="chip-card absolute top-[16%] right-[0%]"><span class="dot bg-signal-400"></span>Gateway linked</div>
+      <div class="chip-card absolute bottom-[12%] left-[6%]"><span class="dot bg-copper-400"></span>Firmware v1.2 running</div>
+      <div class="chip-card absolute right-[4%] bottom-[18%]"><span class="dot bg-emerald-400"></span>Dashboard synced</div>
+    </div>
+  )}
+
+  {name === 'lighting' && (
+    <div class="relative mx-auto h-full max-w-[40rem]">
+      <svg viewBox="0 0 560 440" class="absolute inset-0 h-full w-full">
+        <defs>
+          <linearGradient id="beam" x1="0" y1="0" x2="0" y2="1"><stop offset="0" stop-color="#fde68a" stop-opacity=".55" /><stop offset="1" stop-color="#fde68a" stop-opacity="0" /></linearGradient>
+          <linearGradient id="road" x1="0" y1="0" x2="0" y2="1"><stop offset="0" stop-color="#11223b" /><stop offset="1" stop-color="#050c18" /></linearGradient>
+        </defs>
+        <path d="M0 440 L230 300 H330 L560 440 Z" fill="url(#road)" />
+        <path d="M280 300 V440" stroke="#f59e5b" stroke-opacity=".5" stroke-width="3" stroke-dasharray="14 14" />
+        {[[110, 1], [200, 0.78], [262, 0.6], [370, 0.6], [432, 0.78], [520, 1]].map(([x, s], i) => {
+          const left = x < 280; const top = 300 - 230 * s; const arm = left ? 34 * s : -34 * s;
+          return (
+            <g class="lamp" style={`animation-delay:${i * .35}s`}>
+              <path d={`M${x + arm} ${top + 6} L${x + arm - 46 * s} ${300 + 40 * s} H${x + arm + 46 * s} Z`} fill="url(#beam)" class="beam" />
+              <rect x={x - 3 * s} y={top} width={6 * s} height={300 - top + 20 * s} fill="#334155" />
+              <path d={`M${x} ${top + 2} q ${arm / 2} -10 ${arm} 0`} stroke="#334155" stroke-width={5 * s} fill="none" />
+              <rect x={x + arm - 12 * s} y={top} width={24 * s} height={7 * s} rx="2" fill="#fde68a" class="bulb" />
+            </g>
+          );
+        })}
+        <path d="M110 80 Q 280 20 520 80" stroke="#22d3ee" stroke-width="1.5" fill="none" stroke-dasharray="4 6" class="net" />
+        {[110, 200, 262, 370, 432, 520].map((x, i) => <circle cx={x} cy={[80, 58, 50, 50, 58, 80][i]} r="4" fill="#22d3ee" />)}
+      </svg>
+      <div class="dash-card absolute top-[2%] right-[2%] w-56">
+        <p class="flex items-center justify-between text-[0.7rem] text-fg-subtle"><span class="font-mono">ZONE A · LIVE</span><span class="dot bg-emerald-400"></span></p>
+        <div class="mt-2 grid grid-cols-6 gap-1">{Array.from({ length: 18 }).map((_, i) => <span class:list={['h-3 rounded-sm', i === 7 ? 'bg-copper-400' : i % 5 === 3 ? 'bg-ink-700' : 'bg-signal-400/80']} />)}</div>
+        <p class="mt-2 text-[0.7rem] text-fg-muted">Centralized monitoring &amp; control</p>
+      </div>
+    </div>
+  )}
+
+  {name === 'showcase' && (
+    <div class="showcase relative mx-auto h-full max-w-[44rem]">
+      <svg viewBox="44 76 610 424" class="absolute inset-0 h-full w-full">
+        <defs>
+          <linearGradient id="pod" x1="0" y1="0" x2="1" y2="0"><stop offset="0" stop-color="#0b1a33" /><stop offset=".45" stop-color="#1b3a6b" /><stop offset="1" stop-color="#081326" /></linearGradient>
+          <linearGradient id="podTop" x1="0" y1="0" x2="0" y2="1"><stop offset="0" stop-color="#2a5590" /><stop offset="1" stop-color="#16325e" /></linearGradient>
+          <radialGradient id="floor" cx=".5" cy=".5" r=".5"><stop offset="0" stop-color="#22d3ee" stop-opacity=".28" /><stop offset="1" stop-color="#22d3ee" stop-opacity="0" /></radialGradient>
+          <radialGradient id="halo" cx=".5" cy=".5" r=".5"><stop offset="0" stop-color="#60a5fa" stop-opacity=".35" /><stop offset="1" stop-color="#60a5fa" stop-opacity="0" /></radialGradient>
+          <linearGradient id="steel" x1="0" y1="0" x2="1" y2="1"><stop offset="0" stop-color="#e2e8f0" /><stop offset=".5" stop-color="#94a3b8" /><stop offset="1" stop-color="#cbd5e1" /></linearGradient>
+          <linearGradient id="mask1" x1="0" y1="0" x2="1" y2="1"><stop offset="0" stop-color="#14508f" /><stop offset="1" stop-color="#0a2a52" /></linearGradient>
+          <linearGradient id="mask2" x1="0" y1="0" x2="1" y2="1"><stop offset="0" stop-color="#3b1d6e" /><stop offset="1" stop-color="#1e0f3d" /></linearGradient>
+        </defs>
+        <ellipse cx="340" cy="250" rx="300" ry="220" fill="url(#halo)" />
+        <ellipse cx="340" cy="450" rx="320" ry="46" fill="url(#floor)" />
+
+        {/* podiums: [cx, topY, rx, height] */}
+        {[[150, 360, 95, 70], [520, 372, 88, 58], [335, 330, 130, 120]].map(([cx, ty, rx, h]) => (
+          <g>
+            <path d={`M${cx - rx} ${ty} V${ty + h} A ${rx} ${rx * 0.22} 0 0 0 ${cx + rx} ${ty + h} V${ty} Z`} fill="url(#pod)" />
+            <ellipse cx={cx} cy={ty} rx={rx} ry={rx * 0.22} fill="url(#podTop)" />
+            <ellipse cx={cx} cy={ty} rx={rx} ry={rx * 0.22} fill="none" stroke="#67e8f9" stroke-opacity=".55" stroke-width="1.5" />
+          </g>
+        ))}
+
+        {/* centre: two standing PCBs */}
+        <g class="float-a">
+          <g transform="translate(262 120) rotate(-8)">
+            <rect width="120" height="196" rx="8" fill="url(#mask2)" stroke="#ffffff22" />
+            {Array.from({ length: 9 }).map((_, i) => <circle cx="12" cy={22 + i * 19} r="4" fill="#e8c46a" />)}
+            <rect x="34" y="40" width="54" height="54" rx="3" fill="#0b0b12" stroke="#e8c46a88" />
+            {Array.from({ length: 6 }).map((_, y) => Array.from({ length: 6 }).map((_, x) => <circle cx={42 + x * 8} cy={48 + y * 8} r="1.8" fill="#e8c46a" />))}
+            <path d="M24 120 h40 l10 10 h30 M24 136 h28 l10 10 h42 M24 152 h60" stroke="#e8c46a" stroke-opacity=".55" fill="none" stroke-width="1.6" />
+            {[[30, 168], [52, 172], [74, 168], [96, 172]].map(([x, y]) => <rect x={x} y={y} width="10" height="5" rx="1" fill="#e8c46a" />)}
+            {[[12, 10], [108, 10], [12, 186], [108, 186]].map(([x, y]) => <circle cx={x} cy={y} r="5" fill="#e8c46a" />)}
+          </g>
+          <g transform="translate(318 152) rotate(9)">
+            <rect width="132" height="176" rx="8" fill="url(#mask1)" stroke="#ffffff22" />
+            {[[12, 12], [120, 12], [12, 164], [120, 164]].map(([x, y]) => <g><circle cx={x} cy={y} r="6" fill="#e8c46a" /><circle cx={x} cy={y} r="2.5" fill="#05080d" /></g>)}
+            <rect x="40" y="30" width="52" height="52" rx="3" fill="#05080d" stroke="#e8c46a" stroke-opacity=".7" />
+            {Array.from({ length: 8 }).map((_, i) => <><rect x={43 + i * 6} y="25" width="2.6" height="5" fill="#e8c46a" /><rect x={43 + i * 6} y="82" width="2.6" height="5" fill="#e8c46a" /></>)}
+            <text x="66" y="61" text-anchor="middle" font-family="var(--font-mono)" font-size="8" fill="#94a3b8">NF-01</text>
+            <path d="M20 100 h46 l12 12 h36 M20 116 h30 l12 12 h52 M20 132 h84" stroke="#e8c46a" stroke-opacity=".55" fill="none" stroke-width="1.6" />
+            {Array.from({ length: 10 }).map((_, i) => <rect x={14 + i * 11} y="150" width="6" height="8" rx="1" fill="#e8c46a" />)}
+          </g>
+        </g>
+
+        {/* left: IoT node */}
+        <g class="float-b" transform="translate(98 248)">
+          <rect x="0" y="22" width="104" height="92" rx="20" fill="#13243f" stroke="#2a4468" stroke-width="2" />
+          <rect x="14" y="36" width="76" height="52" rx="8" fill="#0f3b6b" stroke="#e8c46a55" />
+          <rect x="38" y="48" width="26" height="26" rx="3" fill="#05080d" stroke="#e8c46a" stroke-opacity=".7" />
+          <circle cx="22" cy="100" r="4" fill="#22c55e" class="blink" />
+          <rect x="78" y="-14" width="7" height="40" rx="3.5" fill="#475569" /><circle cx="81.5" cy="-17" r="6" fill="#94a3b8" />
+          {[14, 26, 38].map((r, i) => <path d={`M${81.5 - r} ${-20 - r * 0.25} A ${r} ${r} 0 0 1 ${81.5 + r} ${-20 - r * 0.25}`} stroke="#22d3ee" stroke-width="2" fill="none" class="wave2" style={`animation-delay:${i * .3}s`} />)}
+        </g>
+
+        {/* right: SMT stencil */}
+        <g class="float-c" transform="translate(462 236) rotate(-8)">
+          <rect width="118" height="128" rx="6" fill="url(#steel)" stroke="#64748b" />
+          <rect x="14" y="14" width="90" height="100" rx="3" fill="#cbd5e1" stroke="#94a3b8" />
+          {Array.from({ length: 7 }).map((_, y) => Array.from({ length: 6 }).map((_, x) => <rect x={24 + x * 13} y={24 + y * 12} width={x % 3 === 1 ? 4 : 7} height="3" rx="1" fill="#475569" />))}
+        </g>
+
+        {/* floating parts */}
+        <g class="float-d" transform="translate(470 96) rotate(14)">
+          <rect width="56" height="56" rx="6" fill="#0b0b12" stroke="#94a3b8" stroke-opacity=".6" />
+          {Array.from({ length: 7 }).map((_, i) => <><rect x={6 + i * 7} y="-6" width="3" height="6" fill="#cbd5e1" /><rect x={6 + i * 7} y="56" width="3" height="6" fill="#cbd5e1" /><rect x="-6" y={6 + i * 7} width="6" height="3" fill="#cbd5e1" /><rect x="56" y={6 + i * 7} width="6" height="3" fill="#cbd5e1" /></>)}
+          <circle cx="10" cy="10" r="3" fill="#475569" />
+        </g>
+        <g class="float-b" transform="translate(150 120) rotate(-18)">
+          <rect width="30" height="16" rx="3" fill="#a16207" stroke="#facc15" stroke-opacity=".5" />
+          <rect x="-4" y="0" width="6" height="16" rx="1" fill="#cbd5e1" /><rect x="28" y="0" width="6" height="16" rx="1" fill="#cbd5e1" />
+        </g>
+        <g class="float-a" transform="translate(600 300)"><circle r="12" fill="#1e293b" stroke="#94a3b8" /><circle r="5" fill="#f59e5b" /></g>
+      </svg>
+      <div class="tag-card absolute top-[6%] left-[4%]"><span class="dot bg-signal-400"></span>Concept → Production</div>
+    </div>
+  )}
+
+  {name === 'assembly' && (
+    <div class="relative mx-auto h-full max-w-[40rem]">
+      <svg viewBox="0 0 560 440" class="absolute inset-0 h-full w-full">
+        <defs>
+          <linearGradient id="belt" x1="0" y1="0" x2="1" y2="0"><stop offset="0" stop-color="#334155" /><stop offset="1" stop-color="#1e293b" /></linearGradient>
+          <radialGradient id="asmglow" cx=".5" cy=".5" r=".5"><stop offset="0" stop-color="#22d3ee" stop-opacity=".22" /><stop offset="1" stop-color="#22d3ee" stop-opacity="0" /></radialGradient>
+        </defs>
+        <ellipse cx="290" cy="290" rx="270" ry="150" fill="url(#asmglow)" />
+        <rect x="20" y="318" width="520" height="22" rx="11" fill="url(#belt)" stroke="#475569" />
+        {Array.from({ length: 13 }).map((_, i) => <circle cx={40 + i * 40} cy="329" r="6" fill="#64748b" />)}
+        <g transform="translate(150 250)">
+          <rect width="260" height="68" rx="6" fill="#0f3b6b" stroke="#2a5590" />
+          {Array.from({ length: 12 }).map((_, i) => <rect x={14 + i * 20} y="10" width="10" height="5" rx="1" fill="#e8c46a" />)}
+          {Array.from({ length: 12 }).map((_, i) => <rect x={14 + i * 20} y="52" width="10" height="5" rx="1" fill="#e8c46a" />)}
+          <rect x="40" y="22" width="34" height="24" rx="2" fill="#05080d" stroke="#64748b" /><rect x="96" y="20" width="40" height="28" rx="2" fill="#05080d" stroke="#64748b" />
+          <rect x="196" y="24" width="26" height="20" rx="2" fill="none" stroke="#e8c46a" stroke-dasharray="3 2" />
+        </g>
+        <!-- placement head -->
+        <g class="head">
+          <rect x="300" y="40" width="160" height="24" rx="6" fill="#475569" />
+          <rect x="350" y="64" width="60" height="70" rx="8" fill="#64748b" />
+          <rect x="356" y="74" width="48" height="6" rx="3" fill="#22d3ee" opacity=".7" />
+          <rect x="374" y="134" width="12" height="70" rx="3" fill="#cbd5e1" class="nozzle" />
+          <rect x="367" y="200" width="26" height="20" rx="2" fill="#05080d" stroke="#94a3b8" class="part" />
+        </g>
+        <!-- reel -->
+        <g transform="translate(90 150)">
+          <circle r="62" fill="#1e293b" stroke="#64748b" stroke-width="3" />
+          <circle r="44" fill="none" stroke="#94a3b8" stroke-width="10" stroke-dasharray="6 6" class="spin" />
+          <circle r="14" fill="#475569" />
+          <path d="M40 46 Q 70 90 120 100" stroke="#94a3b8" stroke-width="10" fill="none" />
+        </g>
+      </svg>
+      <div class="dash-card absolute top-[4%] right-[0%] w-60">
+        <p class="font-mono text-[0.65rem] tracking-wider text-fg-subtle uppercase">BOM review</p>
+        <ul class="mt-2 space-y-1.5 text-[0.8rem] text-fg-body">
+          <li class="flex items-center gap-2"><span class="tick">✓</span>Availability checked</li>
+          <li class="flex items-center gap-2"><span class="tick">✓</span>Alternates suggested</li>
+          <li class="flex items-center gap-2"><span class="tick">✓</span>Assembly quote prepared</li>
+        </ul>
+      </div>
+    </div>
+  )}
+</div>
+
+<style>
+  /* showcase */
+  .tag-card { display: inline-flex; align-items: center; gap: .5rem; border-radius: 999px; border: 1px solid rgb(34 211 238 / .3); background: rgb(5 12 24 / .8);
+    padding: .4rem .85rem; font: 500 .72rem var(--font-mono); letter-spacing: .06em; color: #a5f3fc; }
+  .float-a { animation: fa 6s ease-in-out infinite; }
+  .float-b { animation: fa 5s ease-in-out infinite -1.5s; }
+  .float-c { animation: fa 7s ease-in-out infinite -3s; }
+  .float-d { animation: fd 8s ease-in-out infinite; transform-box: fill-box; transform-origin: center; }
+  @keyframes fa { 50% { translate: 0 -8px; } }
+  @keyframes fd { 50% { translate: 0 -12px; rotate: 6deg; } }
+  .wave2 { animation: arc2 2.2s ease-in-out infinite; }
+  @keyframes arc2 { 0%, 100% { opacity: .2 } 50% { opacity: 1 } }
+  /* boards */
+  .boards { perspective: 1600px; }
+  .brd { top: 4%; width: 44%; height: 92%; border-radius: 5% / 3%; box-shadow: 0 40px 60px -20px rgb(0 0 0 / .6); transform-style: preserve-3d; transition: transform 1s cubic-bezier(.2,.7,.2,1); }
+  .brd-1 { left: 10%; transform: rotateY(24deg) rotateX(4deg) rotateZ(-2deg); }
+  .brd-2 { right: 2%; transform: rotateY(-18deg) rotateX(4deg) rotateZ(2deg) translateZ(-60px); }
+  :global(.slide.is-active) .brd-1 { animation: floatA 7s ease-in-out infinite; }
+  :global(.slide.is-active) .brd-2 { animation: floatB 7s ease-in-out infinite; }
+  @keyframes floatA { 50% { transform: rotateY(18deg) rotateX(6deg) rotateZ(-2deg) translateY(-8px); } }
+  @keyframes floatB { 50% { transform: rotateY(-12deg) rotateX(6deg) rotateZ(2deg) translateZ(-60px) translateY(6px); } }
+  .lens { left: -2%; top: 14%; width: 34%; aspect-ratio: 1; border-radius: 50%; box-shadow: 0 20px 40px -10px rgb(0 0 0 / .55); z-index: 2; }
+  .lens-tag { left: 50%; bottom: -1.9rem; transform: translateX(-50%); white-space: nowrap; font-size: .62rem; letter-spacing: .08em; color: #67e8f9;
+    background: rgb(5 12 24 / .8); border: 1px solid rgb(34 211 238 / .3); padding: .2rem .5rem; border-radius: 999px; }
+  @media (max-width: 639px) { .lens-tag { display: none; } }
+  .cone { left: 28%; top: 28%; width: 18%; height: 18%; background: linear-gradient(90deg, rgb(34 211 238 / .25), transparent); clip-path: polygon(0 0, 100% 45%, 100% 55%, 0 100%); z-index: 1; }
+  /* iot */
+  .chip-card, .dash-card { display: flex; align-items: center; gap: .5rem; border-radius: .9rem; border: 1px solid rgb(255 255 255 / .1); background: rgb(10 22 40 / .85);
+    padding: .55rem .8rem; font-size: .8rem; color: #e2e8f0; box-shadow: 0 16px 30px -10px rgb(0 0 0 / .6); }
+  .dash-card { display: block; padding: .8rem; }
+  .dot { display: inline-block; width: .5rem; height: .5rem; border-radius: 999px; box-shadow: 0 0 8px currentColor; }
+  .chip-card { animation: bob 5s ease-in-out infinite; }
+  .chip-card:nth-of-type(2) { animation-delay: -1.2s; } .chip-card:nth-of-type(3) { animation-delay: -2.4s; } .chip-card:nth-of-type(4) { animation-delay: -3.6s; }
+  @keyframes bob { 50% { transform: translateY(-8px); } }
+  .ring { transform-origin: 260px 230px; animation: ring 3s ease-out infinite; }
+  @keyframes ring { 0% { opacity: 0; transform: scale(.85); } 40% { opacity: 1; } 100% { opacity: 0; transform: scale(1.1); } }
+  .blink { animation: blink 1.6s steps(2) infinite; }
+  @keyframes blink { 50% { opacity: .2; } }
+  /* lighting */
+  .beam { animation: beam 4s ease-in-out infinite; animation-delay: inherit; }
+  @keyframes beam { 0%, 100% { opacity: .55; } 50% { opacity: 1; } }
+  .net { animation: dash 6s linear infinite; }
+  @keyframes dash { to { stroke-dashoffset: -100; } }
+  /* assembly */
+  .tick { display: inline-flex; width: 1.1rem; height: 1.1rem; align-items: center; justify-content: center; border-radius: 999px; background: rgb(52 211 153 / .18); color: #6ee7b7; font-size: .65rem; font-weight: 700; }
+  .head { animation: head 4s ease-in-out infinite; }
+  @keyframes head { 0%, 100% { transform: translateX(0); } 45%, 55% { transform: translateX(-133px); } }
+  .nozzle, .part { animation: nozzle 4s ease-in-out infinite; }
+  @keyframes nozzle { 0%, 40%, 60%, 100% { transform: translateY(0); } 50% { transform: translateY(34px); } }
+  .part { animation-name: part; }
+  @keyframes part { 0%, 40% { transform: translateY(0); opacity: 1; } 50% { transform: translateY(34px); opacity: 1; } 51%, 90% { opacity: 0; } 100% { opacity: 1; } }
+  .spin { animation: spin 10s linear infinite; }
+  @keyframes spin { to { transform: rotate(360deg); } }
+  /* only animate the visible slide */
+  :global(.slide:not(.is-active)) .art * { animation-play-state: paused !important; }
+  @media (prefers-reduced-motion: reduce) { .art * { animation: none !important; } }
+</style>

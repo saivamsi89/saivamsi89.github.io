@@ -1,0 +1,24 @@
+---
+// Floating "Get a quote" button. Appears after scrolling, hidden on pages
+// that already are quote forms.
+import Icon from './Icon.astro';
+const path = Astro.url.pathname;
+const hide = ['/contact', '/resources/bom-upload'].some((p) => path.startsWith(p));
+const href = path === '/' ? '#quote' : '/#quote';
+---
+{!hide && (
+  <a id="float-quote" href={href} class="btn btn-primary fixed right-4 bottom-4 z-40 translate-y-24 opacity-0 shadow-xl transition duration-300 sm:right-6 sm:bottom-6" aria-hidden="true" tabindex="-1">
+    <Icon name="Calculator" class="size-4" />Get a Quote
+  </a>
+)}
+<script>
+  const b = document.getElementById('float-quote');
+  if (b) {
+    const show = (on: boolean) => {
+      b.classList.toggle('translate-y-24', !on); b.classList.toggle('opacity-0', !on);
+      on ? (b.removeAttribute('aria-hidden'), b.removeAttribute('tabindex')) : (b.setAttribute('aria-hidden', 'true'), b.setAttribute('tabindex', '-1'));
+    };
+    const update = () => show(scrollY > innerHeight * 0.9 && innerHeight + scrollY < document.body.scrollHeight - 400);
+    update(); addEventListener('scroll', update, { passive: true });
+  }
+</script>

@@ -1,0 +1,130 @@
+---
+import { Image } from 'astro:assets';
+import BaseLayout from '@/layouts/BaseLayout.astro';
+import PageHero from '@/components/PageHero.astro';
+import Icon from '@/components/Icon.astro';
+import CTABand from '@/components/CTABand.astro';
+import Illo from '@/components/home/Illo.astro';
+import { services, developmentProcess } from '@/data/site';
+import { servicePhoto } from '@/lib/assets';
+
+const illo: Record<string, 'stack' | 'firmware' | 'wireless' | 'schematic' | 'reel'> = { pcb: 'stack', embedded: 'firmware', iot: 'wireless', talent: 'schematic' };
+const cta: Record<string, { label: string; href: string }> = {
+  pcb: { label: 'Request a PCB Quote', href: '/#quote' },
+  embedded: { label: 'Discuss Your Project', href: '/contact?service=Embedded%20Systems%20Engineering' },
+  product: { label: 'Start Your Product', href: '/contact?service=End-to-End%20Product%20Development' },
+  iot: { label: 'Discuss Your IoT Project', href: '/contact?service=IoT%20%26%20Intelligent%20Automation' },
+  talent: { label: 'Discuss Your Team Needs', href: '/contact?service=Embedded%20Engineering%20Talent%20Solutions' },
+};
+---
+<BaseLayout title="Services" description="PCB design and manufacturing, embedded systems engineering, end-to-end product development, IoT and intelligent automation, and embedded engineering talent.">
+  <PageHero
+    art="boards"
+    eyebrow="Services"
+    title="Comprehensive Engineering &amp; Manufacturing Solutions"
+    lead="From circuit design and firmware to fabrication, assembly and deployment: one integrated team across the entire product lifecycle."
+    crumbs={[{ label: 'Services' }]}
+  >
+    <div class="mt-9 flex flex-wrap gap-2">
+      {services.map((s) => (
+        <a href={`#${s.id}`} class="inline-flex items-center gap-2 rounded-full border border-white/15 bg-white/5 px-4 py-2 text-sm text-fg-body transition hover:border-signal-400 hover:text-white">
+          <Icon name={s.icon} class="size-4 text-signal-400" />{s.title}
+        </a>
+      ))}
+    </div>
+  </PageHero>
+
+  <div class="container-x grid gap-12 py-16 sm:py-20 lg:grid-cols-12">
+    <!-- Sticky section menu (desktop) -->
+    <aside class="hidden lg:col-span-3 lg:block">
+      <nav aria-label="Services" class="sticky top-32">
+        <p class="font-mono text-xs tracking-[0.18em] text-fg-subtle uppercase">On this page</p>
+        <ol class="svc-nav mt-4 space-y-1 border-l border-line">
+          {services.map((s, i) => (
+            <li>
+              <a href={`#${s.id}`} data-spy={s.id} class="-ml-px flex items-center gap-3 border-l-2 border-transparent py-2.5 pl-4 text-sm text-fg-muted transition hover:text-fg">
+                <span class="font-mono text-xs text-fg-subtle">{String(i + 1).padStart(2, '0')}</span>{s.title}
+              </a>
+            </li>
+          ))}
+        </ol>
+        <a href="/contact" class="btn btn-primary mt-8 w-full">Start Your Project</a>
+        <a href="/capabilities" class="btn btn-ghost mt-2 w-full justify-center text-sm">Engineering capabilities <Icon name="ArrowRight" class="size-4" /></a>
+      </nav>
+    </aside>
+
+    <div class="space-y-20 lg:col-span-9 lg:space-y-28">
+      {services.map((s, i) => (
+        <section id={s.id} class="svc scroll-mt-32" aria-labelledby={`${s.id}-title`}>
+          <div class="flex items-start gap-5" data-reveal>
+            <span class="icon-tile size-14 shrink-0"><Icon name={s.icon} class="size-7" /></span>
+            <div>
+              <p class="font-mono text-xs tracking-[0.18em] text-accent-2 uppercase">Service {String(i + 1).padStart(2, '0')}</p>
+              <h2 id={`${s.id}-title`} class="h-section mt-2">{s.title}</h2>
+              <p class="lead mt-3 max-w-2xl">{s.intro}</p>
+            </div>
+          </div>
+
+          {s.id === 'product' ? (
+            <div class="on-dark relative mt-10 overflow-hidden rounded-panel bg-ink-900 p-6 sm:p-10" data-reveal>
+              <div class="bg-grid absolute inset-0 opacity-40" aria-hidden="true"></div>
+              <p class="relative font-mono text-xs tracking-[0.18em] text-fg-subtle uppercase">Our development process</p>
+              <ol class="process relative mt-8 grid gap-x-6 gap-y-8 sm:grid-cols-2 lg:grid-cols-4">
+                {developmentProcess.map((step, k) => (
+                  <li class="relative">
+                    <div class="flex items-center gap-3">
+                      <span class="flex size-10 shrink-0 items-center justify-center rounded-full border border-signal-400/40 bg-signal-400/10 font-mono text-sm font-semibold text-signal-300">{k + 1}</span>
+                      <span class="hidden h-px flex-1 bg-gradient-to-r from-signal-400/40 to-transparent lg:block"></span>
+                    </div>
+                    <p class="mt-3 font-display text-lg leading-snug text-white">{step}</p>
+                  </li>
+                ))}
+              </ol>
+              <a href={cta.product.href} class="btn btn-primary relative mt-10">{cta.product.label} <Icon name="ArrowRight" class="size-4" /></a>
+            </div>
+          ) : (
+            <div class="mt-10 grid gap-6 xl:grid-cols-5">
+              <div class="card p-6 sm:p-8 xl:col-span-3" data-reveal>
+                <p class="font-mono text-xs tracking-[0.18em] text-fg-subtle uppercase">{s.id === 'talent' ? 'Roles we provide' : 'What’s included'}</p>
+                <ul class="mt-5 grid gap-3 sm:grid-cols-2">
+                  {s.items.map((it) => (
+                    <li class="flex items-center gap-3 rounded-xl bg-surface-2 px-4 py-3 text-[0.95rem] text-fg">
+                      <Icon name={s.id === 'talent' ? 'UserRound' : 'Check'} class="size-4 shrink-0 text-accent" strokeWidth={2.25} />{it}
+                    </li>
+                  ))}
+                </ul>
+                <a href={cta[s.id].href} class="btn btn-primary mt-8">{cta[s.id].label} <Icon name="ArrowRight" class="size-4" /></a>
+              </div>
+              <div class="on-dark relative flex min-h-64 items-center justify-center overflow-hidden rounded-panel bg-ink-900 p-6 xl:col-span-2" data-reveal>
+                <div class="bg-grid absolute inset-0 opacity-40" aria-hidden="true"></div>
+                {servicePhoto(s.id)
+                  ? <Image src={servicePhoto(s.id)!} alt={s.title} widths={[500, 800]} sizes="(min-width: 1280px) 30vw, 100vw" class="absolute inset-0 size-full object-cover" />
+                  : <Illo name={illo[s.id]} class:list={['relative', s.id === 'pcb' ? 'h-56 w-full' : 'h-44 w-full']} />}
+              </div>
+            </div>
+          )}
+        </section>
+      ))}
+    </div>
+  </div>
+
+  <CTABand />
+</BaseLayout>
+
+<style>
+  .svc-nav a[aria-current='true'] { border-color: var(--color-signal-500); color: var(--color-fg); font-weight: 600; }
+  .svc-nav a[aria-current='true'] span { color: var(--color-accent); }
+</style>
+
+<script>
+  // Highlight the section currently in view in the sticky menu
+  const links = new Map([...document.querySelectorAll<HTMLAnchorElement>('[data-spy]')].map((a) => [a.dataset.spy!, a]));
+  const io = new IntersectionObserver((entries) => {
+    entries.forEach((e) => {
+      if (!e.isIntersecting) return;
+      links.forEach((a) => a.removeAttribute('aria-current'));
+      links.get(e.target.id)?.setAttribute('aria-current', 'true');
+    });
+  }, { rootMargin: '-35% 0px -60% 0px' });
+  document.querySelectorAll('section.svc').forEach((s) => io.observe(s));
+</script>
