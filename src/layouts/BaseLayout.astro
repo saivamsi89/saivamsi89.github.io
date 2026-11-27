@@ -8,8 +8,8 @@ import FloatingQuote from '@/components/FloatingQuote.astro';
 import { site } from '@/data/site';
 import { announcementVersion } from '@/data/home';
 // Preload the two fonts used above the fold so text never re-flows when they arrive.
-import displayFont from '@fontsource-variable/space-grotesk/files/space-grotesk-latin-wght-normal.woff2?url';
-import bodyFont from '@fontsource-variable/inter/files/inter-latin-wght-normal.woff2?url';
+import displayFont from '@fontsource/poppins/files/poppins-latin-600-normal.woff2?url';
+import bodyFont from '@fontsource/poppins/files/poppins-latin-400-normal.woff2?url';
 
 interface Props { title?: string; description?: string; image?: string; noindex?: boolean }
 const { title, description = site.description, image = '/og-image.png', noindex = false } = Astro.props;
@@ -36,10 +36,10 @@ const orgLd = {
     <title>{fullTitle}</title>
     <meta name="description" content={description} />
     <link rel="canonical" href={canonical} />
-    <link rel="icon" type="image/svg+xml" href="/favicon.svg" />
+    <link rel="icon" type="image/png" href="/favicon.png" />
     <link rel="preload" href={displayFont} as="font" type="font/woff2" crossorigin />
     <link rel="preload" href={bodyFont} as="font" type="font/woff2" crossorigin />
-    <meta name="theme-color" content="#0a1628" />
+    <meta name="theme-color" content="#ffffff" />
     <meta name="color-scheme" content="light dark" />
     {robotsNoindex && <meta name="robots" content="noindex" />}
     <meta property="og:type" content="website" />
@@ -54,9 +54,10 @@ const orgLd = {
     <slot name="head" />
     <script is:inline>
       (function () {
-        var d = document.documentElement, t = null;
-        try { t = localStorage.getItem('theme'); } catch (e) {}
-        d.dataset.theme = t || (matchMedia('(prefers-color-scheme: dark)').matches ? 'dark' : 'light');
+        var d = document.documentElement, dark = matchMedia('(prefers-color-scheme: dark)');
+        // Light or dark follows the visitor's device setting.
+        d.dataset.theme = dark.matches ? 'dark' : 'light';
+        dark.addEventListener('change', function (e) { d.dataset.theme = e.matches ? 'dark' : 'light'; });
         d.classList.add('js');
         try { if (localStorage.getItem('nf-announce') === d.dataset.announce) d.classList.add('announce-off'); } catch (e) {}
         // Safety net: if the reveal script hasn't run within 3s, show everything.

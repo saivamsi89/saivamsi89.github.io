@@ -1,56 +1,59 @@
 @import "tailwindcss";
-@import "@fontsource-variable/inter";
 @import "@fontsource-variable/jetbrains-mono";
-@import "@fontsource-variable/space-grotesk";
+@import "@fontsource/poppins/400.css";
+@import "@fontsource/poppins/400-italic.css";
+@import "@fontsource/poppins/500.css";
+@import "@fontsource/poppins/600.css";
+@import "@fontsource/poppins/700.css";
 
 /* ---------- Design tokens ---------- */
 @theme {
-  --font-sans: "Inter Variable", ui-sans-serif, system-ui, sans-serif;
+  --font-sans: "Poppins", ui-sans-serif, system-ui, sans-serif;
   --font-mono: "JetBrains Mono Variable", ui-monospace, monospace;
-  --font-display: "Space Grotesk Variable", "Inter Variable", ui-sans-serif, system-ui, sans-serif;
+  --font-display: "Poppins", ui-sans-serif, system-ui, sans-serif;
 
   /* Deep navy — substrate */
-  --color-ink-950: #050c18;
-  --color-ink-900: #0a1628;
-  --color-ink-800: #11223b;
-  --color-ink-700: #1b3150;
-  --color-ink-600: #2a4468;
+  --color-ink-950: #1a000a;
+  --color-ink-900: #2a0112;
+  --color-ink-800: #45091f;
+  --color-ink-700: #5f1332;
+  --color-ink-600: #7c2a49;
 
   /* Signal cyan — primary accent */
-  --color-signal-300: #67e8f9;
-  --color-signal-400: #22d3ee;
-  --color-signal-500: #06b6d4;
-  --color-signal-600: #0891b2;
-  --color-signal-700: #0e7490;
+  --color-signal-300: #ff8a9b;
+  --color-signal-400: #ff4d66;
+  --color-signal-500: #e31837;
+  --color-signal-600: #c8102e;
+  --color-signal-700: #a50d27;
 
   /* Copper — secondary accent (PCB traces) */
-  --color-copper-300: #fbbf8a;
-  --color-copper-400: #f59e5b;
-  --color-copper-500: #e07b39;
-  --color-copper-600: #c2611f;
-  --color-copper-700: #9a4a16;
+  --color-copper-300: #f3dcc0;
+  --color-copper-400: #e8b87a;
+  --color-copper-500: #d59a52;
+  --color-copper-600: #b57c34;
+  --color-copper-700: #7a4a12;
 
   /* ---------- Semantic tokens (light theme values) ----------
      Use these role-based names in markup, never raw palette shades for text,
      surfaces or lines. Dark theme and dark sections override them below. */
   --color-surface: #ffffff;        /* page background, cards */
-  --color-surface-2: #f6f8fb;      /* alternate bands, insets */
-  --color-fg: #0a1628;             /* headings, strong text */
-  --color-fg-body: #334155;        /* body copy */
-  --color-fg-muted: #475569;       /* secondary text */
-  --color-fg-subtle: #64748b;      /* captions, meta */
-  --color-fg-faint: #cbd5e1;       /* decorative only (watermarks, placeholders) */
-  --color-line: #e2e8f0;           /* borders, dividers */
-  --color-line-strong: #cbd5e1;    /* form borders, outline buttons */
-  --color-accent: #0e7490;         /* links, eyebrows (AA on white) */
-  --color-accent-strong: #155e75;  /* link hover */
-  --color-accent-2: #9a4a16;       /* copper labels, step numbers (AA on white) */
-  --color-danger: #dc2626;         /* errors, invalid fields */
+  --color-surface-2: #f6f2ea;      /* warm cream bands, insets */
+  --color-fg: #17181a;             /* headings, strong text */
+  --color-fg-body: #2c2c2c;        /* body copy */
+  --color-fg-muted: #47474b;       /* secondary text */
+  --color-fg-subtle: #626266;      /* captions, meta */
+  --color-fg-faint: #d6cfc2;       /* decorative only (watermarks, placeholders) */
+  --color-line: #e5dfd3;           /* borders, dividers */
+  --color-line-strong: #cfc7b8;    /* form borders, outline buttons */
+  --color-accent: #bd0f2b;         /* links, eyebrows (AA on white and cream) */
+  --color-accent-strong: #8c0b20;  /* link hover */
+  --color-accent-2: #5f0229;       /* maroon labels, step numbers */
+  --color-danger: #c00018;         /* errors, invalid fields */
 
   /* Radii: control → card → panel → pill */
-  --radius-control: 0.5rem;
-  --radius-card: 1rem;
-  --radius-panel: 1.5rem;
+  --radius-control: 0px;
+  --radius-card: 2px;
+  --radius-panel: 4px;
 
   /* Micro type sizes used for labels and UI chrome */
   --text-3xs: 0.6rem;
@@ -60,14 +63,14 @@
 
 /* ---------- Brand gradients (one source of truth) ---------- */
 :root {
-  --grad-hero: radial-gradient(ellipse at 75% 45%, #133a6e 0%, #0a1f3e 42%, #050c18 100%);
-  --grad-showcase: radial-gradient(ellipse at 72% 55%, #16407a 0%, #0b2347 40%, #050c18 100%);
-  --grad-deep: radial-gradient(ellipse at 75% 50%, #12305a 0%, #0a1628 45%, #050c18 100%);
-  --grad-ocean: radial-gradient(ellipse at 70% 45%, #10345c 0%, #091a33 45%, #050c18 100%);
-  --grad-teal: radial-gradient(ellipse at 72% 50%, #0b3b4a 0%, #071a2a 45%, #050c18 100%);
-  --grad-night: radial-gradient(ellipse at 70% 30%, #1d2a4a 0%, #0a1222 50%, #04070e 100%);
-  --grad-mission: radial-gradient(ellipse at 85% 15%, #155e75 0%, #0a1f3e 55%, #050c18 100%);
-  --grad-vision: radial-gradient(ellipse at 85% 15%, #7c3a12 0%, #2a1a1a 45%, #050c18 100%);
+  --grad-hero: radial-gradient(ellipse at 75% 45%, #8c0f3a 0%, #4a031f 42%, #1a000a 100%);
+  --grad-showcase: radial-gradient(ellipse at 72% 55%, #a8123c 0%, #5f0229 42%, #1a000a 100%);
+  --grad-deep: radial-gradient(ellipse at 75% 50%, #7a0a33 0%, #45041f 48%, #1a000a 100%);
+  --grad-ocean: radial-gradient(ellipse at 70% 45%, #7a0a33 0%, #45041f 45%, #1a000a 100%);
+  --grad-teal: radial-gradient(ellipse at 72% 50%, #8c0f3a 0%, #4a031f 45%, #1a000a 100%);
+  --grad-night: radial-gradient(ellipse at 70% 30%, #5f0229 0%, #33061a 50%, #14000a 100%);
+  --grad-mission: radial-gradient(ellipse at 85% 15%, #a8123c 0%, #5f0229 55%, #1a000a 100%);
+  --grad-vision: radial-gradient(ellipse at 85% 15%, #7a4a12 0%, #3d1a12 50%, #1a000a 100%);
 }
 @utility bg-grad-hero { background: var(--grad-hero); }
 @utility bg-grad-showcase { background: var(--grad-showcase); }
@@ -87,37 +90,53 @@
 
 :root[data-theme='dark'] {
   color-scheme: dark;
-  --color-surface: #0c1829;
-  --color-surface-2: #091321;
-  --color-fg: #eef3f9;
-  --color-fg-body: #cdd6e2;
-  --color-fg-muted: #a8b5c7;
-  --color-fg-subtle: #94a3b8;
-  --color-fg-faint: #2b4262;
-  --color-line: #1d3049;
-  --color-line-strong: #2b4262;
-  --color-accent: #67e8f9;
-  --color-accent-strong: #a5f3fc;
-  --color-accent-2: #f59e5b;
-  --color-danger: #f87171;
+  --color-surface: #17181a;
+  --color-surface-2: #111214;
+  --color-fg: #f6f2ea;
+  --color-fg-body: #dcd8d0;
+  --color-fg-muted: #bdb9b2;
+  --color-fg-subtle: #9b978f;
+  --color-fg-faint: #34353a;
+  --color-line: #2e3034;
+  --color-line-strong: #45474d;
+  --color-accent: #ff6b7f;
+  --color-accent-strong: #ff9dab;
+  --color-accent-2: #e8b87a;
+  --color-danger: #ff8080;
 }
-.on-dark,
-#site-header[data-scrolled='false']:not([data-open='true']) :is(.logo-link, .nav-link, .menu-btn) {
-  --color-surface: #0a1628;
-  --color-surface-2: #11223b;
+/* The header is always white (the logo needs a white background), in both themes. */
+#site-header {
+  color-scheme: light;
+  --color-surface: #ffffff;
+  --color-surface-2: #f6f2ea;
+  --color-fg: #17181a;
+  --color-fg-body: #2c2c2c;
+  --color-fg-muted: #47474b;
+  --color-fg-subtle: #626266;
+  --color-fg-faint: #d6cfc2;
+  --color-line: #e5dfd3;
+  --color-line-strong: #cfc7b8;
+  --color-accent: #bd0f2b;
+  --color-accent-strong: #8c0b20;
+  --color-accent-2: #5f0229;
+  --color-danger: #c00018;
+}
+.on-dark {
+  --color-surface: #2a0112;
+  --color-surface-2: #45091f;
   --color-fg: #ffffff;
-  --color-fg-body: #e2e8f0;
-  --color-fg-muted: #cbd5e1;
-  --color-fg-subtle: #94a3b8;
+  --color-fg-body: #f1e9ea;
+  --color-fg-muted: #dccdd1;
+  --color-fg-subtle: #bda3ab;
   --color-fg-faint: rgb(255 255 255 / 0.12);
   --color-line: rgb(255 255 255 / 0.1);
   --color-line-strong: rgb(255 255 255 / 0.25);
-  --color-accent: #22d3ee;
-  --color-accent-strong: #67e8f9;
-  --color-accent-2: #f59e5b;
+  --color-accent: #ff8a9b;
+  --color-accent-strong: #ffc2cb;
+  --color-accent-2: #e8b87a;
 }
-/* Dark sections sit on a slightly deeper navy in dark theme so they still read as bands */
-:root[data-theme='dark'] .on-dark.bg-ink-900 { background-color: #071120; }
+/* Dark sections sit on a slightly deeper shade in dark theme so they still read as bands */
+:root[data-theme='dark'] .on-dark.bg-ink-900 { background-color: #1f000d; }
 :root[data-theme='dark'] mark { background: #4a3a12; color: #fde68a; }
 :root[data-theme='dark'] .bg-amber-50 { background: #2a2210; color: #fde68a; }
 :root[data-theme='dark'] .bg-emerald-50 { background: #0c2a1f; color: #a7f3d0; }
@@ -146,28 +165,28 @@
   .section { @apply py-16 sm:py-24; }
 
   .eyebrow {
-    @apply inline-flex items-center gap-2 font-mono text-xs font-medium uppercase tracking-[0.18em] text-accent;
+    @apply inline-flex items-center gap-2 font-sans text-xs font-semibold uppercase tracking-[0.18em] text-accent;
   }
   .eyebrow::before { content: ""; @apply h-px w-6 bg-current; }
 
   .h-display { @apply text-[2.6rem] leading-[1.02] tracking-[-0.035em] sm:text-6xl lg:text-7xl; }
-  .h-mega { @apply font-display text-[3rem] leading-[0.95] font-semibold tracking-[-0.045em] sm:text-7xl lg:text-[5.4rem] xl:text-[6rem]; }
+  .h-mega { @apply font-display text-[3rem] leading-[0.95] font-semibold tracking-[-0.045em] sm:text-6xl lg:text-[4.8rem] xl:text-[5.2rem]; }
   .h-section { @apply text-3xl leading-[1.08] tracking-[-0.03em] sm:text-[2.75rem]; }
   .lead { @apply text-lg leading-relaxed text-fg-muted; }
 
   .btn {
-    @apply inline-flex items-center justify-center gap-2 rounded-control px-5 py-3 text-sm font-semibold transition
+    @apply inline-flex items-center justify-center gap-2 rounded-control px-6 py-3 text-xs font-semibold tracking-[0.06em] uppercase transition
       duration-150 focus-visible:outline-2 focus-visible:outline-offset-2;
   }
-  .btn-primary { @apply bg-signal-500 text-ink-950 hover:bg-signal-400 shadow-[0_8px_24px_-8px] shadow-signal-500/60; }
+  .btn-primary { @apply bg-signal-500 text-white hover:bg-signal-600 shadow-[0_8px_24px_-8px] shadow-signal-500/60; }
   .btn-copper { @apply bg-copper-500 text-white hover:bg-copper-400; }
   .btn-outline { @apply border border-line-strong text-fg hover:border-fg hover:bg-fg hover:text-surface; }
   .on-dark .btn-outline { @apply hover:border-white hover:bg-white hover:text-ink-950; }
   .btn-ghost { @apply px-0 text-accent hover:text-accent-strong; }
   /* sizes & shapes (use instead of !important overrides) */
   .btn-sm { @apply px-4 py-2.5; }
-  .btn-lg { @apply px-7 py-3.5 text-base; }
-  .btn-pill { @apply rounded-full; }
+  .btn-lg { @apply px-8 py-4 text-[0.8rem]; }
+  .btn-pill { @apply rounded-control; }
 
   .card {
     @apply rounded-card border border-line bg-surface p-6 transition duration-200;
@@ -212,8 +231,8 @@
   }
   .bg-grid-light {
     background-image:
-      linear-gradient(to right, rgb(10 22 40 / 0.05) 1px, transparent 1px),
-      linear-gradient(to bottom, rgb(10 22 40 / 0.05) 1px, transparent 1px);
+      linear-gradient(to right, rgb(23 24 26 / 0.05) 1px, transparent 1px),
+      linear-gradient(to bottom, rgb(23 24 26 / 0.05) 1px, transparent 1px);
     background-size: 44px 44px;
   }
   .mask-fade { mask-image: radial-gradient(ellipse at center, black 30%, transparent 75%); }
@@ -237,7 +256,7 @@
 [data-spotlight] { position: relative; isolation: isolate; }
 [data-spotlight]::after {
   content: ""; position: absolute; inset: 0; z-index: -1; pointer-events: none; opacity: 0; transition: opacity .3s;
-  background: radial-gradient(520px circle at var(--mx, 50%) var(--my, 50%), rgb(34 211 238 / 0.10), transparent 60%);
+  background: radial-gradient(520px circle at var(--mx, 50%) var(--my, 50%), rgb(255 77 102 / 0.10), transparent 60%);
 }
 [data-spotlight]:hover::after { opacity: 1; }
 

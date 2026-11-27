@@ -16,18 +16,18 @@ const pins = locations.map((l) => {
   const [x, y] = projection([l.lon, l.lat])!;
   return { ...l, x, y };
 });
-const color = { Office: '#22d3ee', Partner: '#f59e5b', Representative: '#a7f3d0' } as const;
+const color = { Office: '#ff4d66', Partner: '#e8b87a', Representative: '#a7f3d0' } as const;
 ---
 <div class="relative" id="world-map">
   <svg viewBox={`0 0 ${W} ${H}`} class="h-auto w-full" role="img" aria-label={pins.length ? `World map showing ${pins.length} Nanofab locations` : 'World map'}>
-    <path d={path({ type: 'Sphere' } as any)} fill="#0d1d33" stroke="#1f3a5c" />
-    <g fill="#1b3150" stroke="#2a4468" stroke-width="0.5">
+    <path d={path({ type: 'Sphere' } as any)} fill="#33061a" stroke="#6a1c3a" />
+    <g fill="#5f1332" stroke="#7c2a49" stroke-width="0.5">
       {countries.map((c: any) => <path d={c.d}><title>{c.name}</title></path>)}
     </g>
     {pins.map((p) => (
       <g class="pin" tabindex="0" role="button" aria-label={`${p.name}, ${p.city} (${p.type})`} data-label={`${p.name} · ${p.city}`} data-type={p.type} transform={`translate(${p.x} ${p.y})`}>
         <circle r="14" fill={color[p.type]} opacity="0.18" class="ping" />
-        <circle r="5" fill={color[p.type]} stroke="#0a1628" stroke-width="2" />
+        <circle r="5" fill={color[p.type]} stroke="#2a0112" stroke-width="2" />
       </g>
     ))}
   </svg>

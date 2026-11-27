@@ -4,7 +4,7 @@ import PageHero from '@/components/PageHero.astro';
 import { credits } from '@/data/credits';
 ---
 <BaseLayout title="Image Credits" description="Credits and licences for third-party images used on the Nanofab Innovations website.">
-  <PageHero eyebrow="Legal" title="Image Credits" lead="Some imagery on this website is used under open licences. We thank the photographers below." crumbs={[{ label: 'Image Credits' }]} />
+  <PageHero eyebrow="Legal" title="Image Credits" lead="Sources and licences of third-party imagery used on this website." crumbs={[{ label: 'Image Credits' }]} />
   <section class="section">
     <div class="container-x">
       <div class="overflow-x-auto rounded-card border border-line">
@@ -15,7 +15,7 @@ import { credits } from '@/data/credits';
           <tbody class="divide-y divide-line">
             {credits.map((c) => (
               <tr>
-                <td class="px-5 py-4"><a href={c.source} class="font-medium text-accent underline underline-offset-2" rel="noopener" target="_blank">{c.title}</a></td>
+                <td class="px-5 py-4">{c.source ? <a href={c.source} class="font-medium text-accent underline underline-offset-2" rel="noopener" target="_blank">{c.title}</a> : <span class="font-medium text-fg">{c.title}</span>}</td>
                 <td class="px-5 py-4 text-fg-body">{c.author}</td>
                 <td class="px-5 py-4 text-fg-body">{c.licenseUrl ? <a href={c.licenseUrl} class="text-accent underline underline-offset-2" rel="noopener" target="_blank">{c.license}</a> : c.license}</td>
                 <td class="px-5 py-4 text-fg-muted">{c.changes ?? '—'}</td>

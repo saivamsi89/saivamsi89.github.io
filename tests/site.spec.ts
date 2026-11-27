@@ -107,21 +107,14 @@ test('BOM upload requires a file', async ({ page }) => {
   await expect(page.locator('.form-status')).toContainText('required fields');
 });
 
-test('theme menu: System / Light / Dark, remembered across visits', async ({ page }) => {
+test('theme follows the device; header has no theme switch or project button', async ({ page }) => {
   await page.emulateMedia({ colorScheme: 'light' });
   await page.goto('/');
   await expect(page.locator('html')).toHaveAttribute('data-theme', 'light');
-  await expect(page.locator('#theme-toggle')).toHaveAttribute('aria-label', 'Theme: System');
-  await page.locator('#theme-toggle').click();
-  await page.locator('[data-theme-choice="dark"]').click();
-  await expect(page.locator('html')).toHaveAttribute('data-theme', 'dark');
-  await page.reload();
-  await expect(page.locator('html')).toHaveAttribute('data-theme', 'dark');
-  await page.locator('#theme-toggle').click();
-  await page.locator('[data-theme-choice="system"]').click();
-  await expect(page.locator('html')).toHaveAttribute('data-theme', 'light'); // follows the (light) device again
   await page.emulateMedia({ colorScheme: 'dark' });
-  await expect(page.locator('html')).toHaveAttribute('data-theme', 'dark'); // live-follows device changes
+  await expect(page.locator('html')).toHaveAttribute('data-theme', 'dark');
+  await expect(page.locator('#theme-toggle')).toHaveCount(0);
+  await expect(page.locator('#site-header a', { hasText: 'Start Your Project' })).toHaveCount(0);
 });
 
 test('mobile menu opens and closes', async ({ page, isMobile }) => {
@@ -236,7 +229,7 @@ test.describe('home portal features', () => {
   });
 
   test('hero videos and posters exist', async ({ request }) => {
-    for (const n of ['pcb-build', 'layer-stack', 'signal-macro', 'smart-lighting', 'showreel']) {
+    for (const n of ['pcb-build', 'smart-lighting', 'showreel']) {
       for (const f of [`/videos/${n}.mp4`, `/videos/${n}-poster.jpg`]) expect((await request.get(f)).status(), f).toBe(200);
     }
   });
@@ -353,4 +346,23 @@ test('every banner photo is registered in the image credits', () => {
   const registry = readFileSync(new URL('../src/data/credits.ts', import.meta.url).pathname, 'utf8');
   const files = existsSync(dir) ? readdirSync(dir).filter((f) => /\.(jpe?g|png|webp|avif)$/i.test(f)) : [];
   expect(files.filter((f) => !registry.includes(`file: '${f}'`))).toEqual([]);
+});
+
+test('no image with unconfirmed rights gets deployed', () => {
+  test.skip(!process.env.CI, 'local previews may use unconfirmed images');
+  const registry = readFileSync(new URL('../src/data/credits.ts', import.meta.url).pathname, 'utf8');
+  expect(registry.match(/license: 'Unconfirmed'/g) ?? []).toEqual([]);
+});
+
+test('pointing at a banner progress segment shows that slide and holds it', async ({ page, isMobile }) => {
+  test.skip(isMobile, 'mouse only');
+  await page.goto('/');
+  for (const i of [3, 1, 4]) {
+    await page.locator(`.hero-tab[data-go="${i}"]`).hover();
+    await expect(page.locator(`.slide[data-slide="${i}"]:not([data-clone])`)).toHaveClass(/is-active/);
+  }
+  await page.waitForTimeout(7200);
+  await expect(page.locator('.slide[data-slide="4"]')).toHaveClass(/is-active/);
+  await page.mouse.move(5, 400);
+  await expect(page.locator('.slide[data-slide="0"]:not([data-clone])')).toHaveClass(/is-active/, { timeout: 9000 });
 });

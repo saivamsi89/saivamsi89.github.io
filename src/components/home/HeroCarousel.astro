@@ -18,14 +18,14 @@ const DURATION = 6500;
             role="group" aria-roledescription="slide" aria-label={`${i + 1} of ${slides.length}: ${s.tab}`} data-slide={i} inert={i === 0 ? undefined : true}>
             <div class="bg-grid absolute inset-0 -z-10 opacity-25" aria-hidden="true"></div>
             {s.photo && (
-              <div class="slide-photo absolute inset-y-0 right-0 -z-10 hidden w-[56%] lg:block" aria-hidden="true">
-                <Image src={heroPhoto(s.photo)!} alt="" widths={[960, 1440, 1920]} sizes="56vw" loading={i === 0 ? 'eager' : 'lazy'} class="size-full object-cover object-[12%_center]" />
+              <div class="slide-photo absolute inset-y-0 right-0 -z-10 hidden w-[74%] lg:block" aria-hidden="true">
+                <Image src={heroPhoto(s.photo)!} alt="" widths={[960, 1440, 1920]} sizes="74vw" loading={i === 0 ? 'eager' : 'lazy'} class="size-full object-cover" style={`object-position:${s.focus ?? 'center'}`} />
               </div>
             )}
             <div class="container-x slide-inner grid items-center gap-8 lg:grid-cols-12">
               <div class="slide-copy lg:col-span-6">
                 {s.eyebrow && <p class="eyebrow">{s.eyebrow}</p>}
-                <Heading class="mt-4 font-display text-[2.3rem] leading-[1.05] font-bold tracking-[-0.035em] text-white sm:text-5xl lg:text-[3.7rem]">
+                <Heading class="mt-4 font-display text-[2.3rem] leading-[1.05] font-bold tracking-[-0.035em] text-white sm:text-5xl lg:text-[3.2rem]">
                   <span class="block">{s.title}</span>
                   {s.accent && <span class="accent block">{s.accent}</span>}
                 </Heading>
@@ -83,8 +83,8 @@ const DURATION = 6500;
   .slide:not(.is-active) { content-visibility: auto; contain-intrinsic-size: auto 100svh; }
   .slide-inner { padding-top: 8.5rem; padding-bottom: 2rem; }
   /* Photo slides: the image fades into the slide's gradient from the left and the bottom */
-  .slide-photo { mask-image: linear-gradient(to right, transparent 0%, black 38%); }
-  .slide-photo::after { content: ''; position: absolute; inset: 0; background: linear-gradient(180deg, rgb(5 12 24 / .25), rgb(5 12 24 / .1) 45%, rgb(5 12 24 / .85)); }
+  .slide-photo { mask-image: linear-gradient(to right, transparent 0%, black 46%); }
+  .slide-photo::after { content: ''; position: absolute; inset: 0; background: linear-gradient(180deg, rgb(26 0 10 / .25), rgb(26 0 10 / .1) 45%, rgb(26 0 10 / .85)); }
   .slide-art { height: 18rem; }
   @media (min-width: 640px) { .slide-art { height: 24rem; } }
   @media (min-width: 1024px) {
@@ -104,7 +104,7 @@ const DURATION = 6500;
 
   /* controls */
   .ctrl-btn { display: inline-flex; align-items: center; justify-content: center; border-radius: 999px; border: 1px solid rgb(255 255 255 / .2);
-    background: rgb(5 12 24 / .35); color: var(--color-fg); backdrop-filter: blur(6px); transition: background .2s, border-color .2s, color .2s; }
+    background: rgb(26 0 10 / .35); color: var(--color-fg); backdrop-filter: blur(6px); transition: background .2s, border-color .2s, color .2s; }
   .ctrl-btn:hover { background: rgb(255 255 255 / .15); }
   .ctrl-btn[hidden] { display: none; }
   @media (max-width: 1023px) { .hero-prev, .hero-next { display: none; } }
@@ -112,7 +112,7 @@ const DURATION = 6500;
   .bar { background: var(--color-fg); transform: scaleX(0); transform-origin: left; }
   .hero-tab[aria-selected='true'] .bar { animation: hero-progress var(--dur, 6500ms) linear forwards; }
   .hero.is-paused .hero-tab[aria-selected='true'] .bar { animation-play-state: paused; }
-  .hero.is-static .hero-tab[aria-selected='true'] .bar, .hero.is-held .hero-tab[aria-selected='true'] .bar { animation: none; transform: scaleX(1); }
+  .hero.is-static .hero-tab[aria-selected='true'] .bar, .hero.is-held .hero-tab[aria-selected='true'] .bar, .hero.is-hovering .hero-tab[aria-selected='true'] .bar { animation: none; transform: scaleX(1); }
   @keyframes hero-progress { to { transform: scaleX(1); } }
   @media (max-width: 1023px) { .hero-ctrl { background: var(--color-ink-950); } }
   @media (prefers-reduced-motion: reduce) { .track, .slide-copy > * { transition: none !important; } }
@@ -172,6 +172,17 @@ const DURATION = 6500;
 
     if (reduced) { hero.classList.add('is-static'); pauseBtn.hidden = true; }
     tabs.forEach((t) => t.addEventListener('click', () => go(Number(t.dataset.go))));
+    // Pointing the mouse at a progress segment shows its slide; auto-advance waits until the mouse leaves.
+    tabs.forEach((t) => t.addEventListener('pointerenter', (e) => {
+      if (e.pointerType !== 'mouse') return;
+      hoverPaused = true; hero.classList.add('is-hovering');
+      const i = Number(t.dataset.go);
+      if (i !== real()) go(i); else schedule();
+    }));
+    hero.querySelector('[role=tablist]')!.addEventListener('pointerleave', () => {
+      if (!hero.classList.contains('is-hovering')) return;
+      hoverPaused = false; hero.classList.remove('is-hovering'); schedule();
+    });
     hero.querySelector('.hero-next')!.addEventListener('click', () => go(index + 1));
     hero.querySelector('.hero-prev')!.addEventListener('click', () => go(real() - 1));
     pauseBtn.addEventListener('click', () => {

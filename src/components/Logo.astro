@@ -1,17 +1,9 @@
 ---
-// Placeholder wordmark — swap for the official logo SVG when available.
-// Text colours follow theme tokens, so one logo works on light and dark surfaces.
+// Official Nanofab logo, used exactly as supplied (only the surrounding white margin
+// is trimmed). It has dark lettering on white, so always place it on a white surface.
+import { Image } from 'astro:assets';
+import logo from '@/assets/brand/nanofab-logo.jpg';
 interface Props { class?: string }
-const { class: cls = '' } = Astro.props;
+const { class: cls = 'h-9' } = Astro.props;
 ---
-<span class:list={['inline-flex items-center gap-2.5', cls]}>
-  <svg viewBox="0 0 32 32" class="size-9 shrink-0" aria-hidden="true">
-    <rect width="32" height="32" rx="7" fill="#0a1628" stroke="#ffffff" stroke-opacity=".12" />
-    <path d="M9 23V9l14 14V9" fill="none" stroke="#22d3ee" stroke-width="2.6" stroke-linecap="round" stroke-linejoin="round" />
-    <circle cx="9" cy="9" r="2.2" fill="#f59e5b" /><circle cx="23" cy="23" r="2.2" fill="#f59e5b" />
-  </svg>
-  <span class="leading-none">
-    <span class="block text-[1.05rem] font-bold tracking-tight text-fg">Nanofab</span>{' '}
-    <span class="block font-mono text-3xs uppercase tracking-[0.22em] text-accent">Innovations</span>
-  </span>
-</span>
+<Image src={logo} alt="Nanofab" widths={[200, 400, 600]} sizes="200px" loading="eager" class:list={['w-auto', cls]} />

@@ -54,23 +54,7 @@ const isActive = (href: string) => href === activeHref;
       </ul>
     </nav>
 
-    <div class="flex items-center gap-2">
-      <div class="relative" id="theme-switch">
-        <button id="theme-toggle" type="button" class="menu-btn inline-flex size-10 items-center justify-center rounded-control transition" aria-haspopup="true" aria-expanded="false" aria-controls="theme-menu" aria-label="Theme: System">
-          <span data-icon="system"><Icon name="Monitor" class="size-5" /></span>
-          <span data-icon="light" hidden><Icon name="Sun" class="size-5" /></span>
-          <span data-icon="dark" hidden><Icon name="Moon" class="size-5" /></span>
-        </button>
-        <div id="theme-menu" class="absolute top-full right-0 mt-2 w-40 rounded-card border border-line bg-surface p-1.5 shadow-2xl shadow-ink-950/20" hidden>
-          <p class="px-3 pt-1.5 pb-1 font-mono text-2xs tracking-[0.18em] text-fg-subtle uppercase">Theme</p>
-          {[['system', 'Monitor', 'System'], ['light', 'Sun', 'Light'], ['dark', 'Moon', 'Dark']].map(([v, icon, label]) => (
-            <button type="button" data-theme-choice={v} aria-pressed="false" class="theme-opt flex w-full items-center gap-3 rounded-control px-3 py-2 text-sm text-fg-body hover:bg-surface-2">
-              <Icon name={icon} class="size-4" />{label}<Icon name="Check" class="check ml-auto size-4 text-accent" />
-            </button>
-          ))}
-        </div>
-      </div>
-      <a href="/contact" class="btn btn-primary hidden btn-sm whitespace-nowrap sm:inline-flex lg:hidden xl:inline-flex">Start Your Project</a>
+    <div class="flex items-center gap-2 lg:hidden">
       <button
         id="menu-toggle"
         type="button"
@@ -101,26 +85,18 @@ const isActive = (href: string) => href === activeHref;
           </li>
         ))}
       </ul>
-      <a href="/contact" class="btn btn-primary mt-4 w-full">Start Your Project</a>
     </nav>
   </div>
 </header>
 
 <style>
-  /* All colours come from theme tokens: at the top of the page the logo, links and
-     buttons use dark-section values (see global.css); once scrolled or opened, the
-     page theme's values. No per-theme special cases needed. */
-  #site-header { background: linear-gradient(to bottom, rgb(5 12 24 / .55), rgb(5 12 24 / 0)); }
-  #site-header[data-scrolled='true'], #site-header[data-open='true'] {
-    background: color-mix(in srgb, var(--color-surface) 92%, transparent);
-    backdrop-filter: blur(12px);
-    box-shadow: 0 1px 0 var(--color-line);
-  }
+  /* Always a white bar, so the logo appears exactly as supplied. */
+  #site-header { background: var(--color-surface); box-shadow: 0 1px 0 var(--color-line); }
+  #site-header[data-scrolled='true'] { box-shadow: 0 4px 16px -8px rgb(23 24 26 / 0.25); }
   .nav-link { color: var(--color-fg-muted); transition: color .3s, background-color .2s; }
   .nav-link:hover, .nav-link.is-active { color: var(--color-fg); background: color-mix(in srgb, var(--color-fg) 8%, transparent); }
   .menu-btn { color: var(--color-fg); transition: color .3s, background-color .2s; }
   .menu-btn:hover { background: color-mix(in srgb, var(--color-fg) 8%, transparent); }
-  .theme-opt[aria-pressed='false'] :global(.check) { visibility: hidden; }
 </style>
 
 <script>
@@ -141,30 +117,5 @@ const isActive = (href: string) => href === activeHref;
   };
   toggle.addEventListener('click', () => setOpen(menu.classList.contains('hidden')));
   document.addEventListener('keydown', (e) => e.key === 'Escape' && setOpen(false));
-  // Theme: System / Light / Dark. The initial theme is applied by an inline script in
-  // BaseLayout before first paint; "system" = no stored choice, follow the device.
-  const themeBtn = document.getElementById('theme-toggle')!;
-  const themeMenu = document.getElementById('theme-menu')!;
-  const getChoice = () => { try { return localStorage.getItem('theme') || 'system'; } catch { return 'system'; } };
-  const systemDark = () => matchMedia('(prefers-color-scheme: dark)').matches;
-  const applyTheme = (choice: string) => {
-    document.documentElement.dataset.theme = choice === 'system' ? (systemDark() ? 'dark' : 'light') : choice;
-    themeBtn.querySelectorAll<HTMLElement>('[data-icon]').forEach((i) => (i.hidden = i.dataset.icon !== choice));
-    themeBtn.setAttribute('aria-label', `Theme: ${choice[0].toUpperCase()}${choice.slice(1)}`);
-    themeMenu.querySelectorAll<HTMLElement>('[data-theme-choice]').forEach((b) => b.setAttribute('aria-pressed', String(b.dataset.themeChoice === choice)));
-  };
-  const setMenu = (open: boolean) => { themeMenu.hidden = !open; themeBtn.setAttribute('aria-expanded', String(open)); };
-  applyTheme(getChoice());
-  themeBtn.addEventListener('click', (e) => { e.stopPropagation(); setMenu(themeMenu.hidden); if (!themeMenu.hidden) themeMenu.querySelector<HTMLElement>('[aria-pressed=true]')?.focus(); });
-  themeMenu.querySelectorAll<HTMLButtonElement>('[data-theme-choice]').forEach((b) =>
-    b.addEventListener('click', () => {
-      const c = b.dataset.themeChoice!;
-      try { c === 'system' ? localStorage.removeItem('theme') : localStorage.setItem('theme', c); } catch {}
-      applyTheme(c); setMenu(false); themeBtn.focus();
-    }),
-  );
-  document.addEventListener('click', (e) => { if (!(e.target as Element).closest('#theme-switch')) setMenu(false); });
-  document.addEventListener('keydown', (e) => { if (e.key === 'Escape' && !themeMenu.hidden) { setMenu(false); themeBtn.focus(); } });
-  matchMedia('(prefers-color-scheme: dark)').addEventListener('change', () => { if (getChoice() === 'system') applyTheme('system'); });
   window.matchMedia('(min-width: 1024px)').addEventListener('change', (e) => e.matches && setOpen(false));
 </script>

@@ -11,6 +11,7 @@ export type HeroSlide = {
   accent?: string; // highlighted line of the title (gradient)
   bullets?: string[];
   art?: 'showcase' | 'boards' | 'iot' | 'lighting' | 'assembly';
+  focus?: string; // CSS object-position for the photo, e.g. '60% center'
   photo?: string; // photo in src/assets/hero/ (must be listed in data/credits.ts), shown blended into the slide instead of `art`
   bg: 'showcase' | 'deep' | 'ocean' | 'teal' | 'night'; // named brand gradient (see --grad-* in global.css)
   cta: { label: string; href: string };
@@ -25,8 +26,20 @@ export const heroSlides: HeroSlide[] = [
     accent: 'Enabling Possibilities.',
     bullets: ['PCB design, fabrication and assembly', 'Embedded systems, firmware and IoT', 'From concept to production-ready products'],
     art: 'showcase',
+    photo: 'engineers-inspecting.jpg',
     bg: 'showcase',
     cta: { label: 'Start Your Project', href: '/contact' },
+  },
+  {
+    id: 'assembly',
+    tab: 'BOM to assembly',
+    title: 'Upload Your BOM.',
+    accent: 'We Source & Assemble.',
+    bullets: ['Component availability checks and alternates', 'PCB assembly for prototypes and production runs', 'One quotation for parts, boards and assembly'],
+    art: 'assembly',
+    photo: 'pcb-assembly.jpg',
+    bg: 'ocean',
+    cta: { label: 'Upload Your BOM', href: '/resources/bom-upload' },
   },
   {
     id: 'pcb',
@@ -39,22 +52,14 @@ export const heroSlides: HeroSlide[] = [
     cta: { label: 'Explore PCB Services', href: '/services#pcb' },
   },
   {
-    id: 'assembly',
-    tab: 'BOM to assembly',
-    title: 'Upload Your BOM.',
-    accent: 'We Source & Assemble.',
-    bullets: ['Component availability checks and alternates', 'PCB assembly for prototypes and production runs', 'One quotation for parts, boards and assembly'],
-    art: 'assembly',
-    bg: 'ocean',
-    cta: { label: 'Upload Your BOM', href: '/resources/bom-upload' },
-  },
-  {
     id: 'iot',
     tab: 'Embedded & IoT',
     title: 'Embedded & IoT',
     accent: 'Built End to End',
     bullets: ['Embedded hardware, firmware and embedded Linux', 'Sensor integration and wireless connectivity', 'Devices, gateways and dashboards that work together'],
     art: 'iot',
+    photo: 'iot-dashboard-engineer.jpg',
+    focus: '65% center',
     bg: 'teal',
     cta: { label: 'Discuss Your Project', href: '/contact?service=Embedded%20Systems%20Engineering' },
   },
@@ -66,6 +71,7 @@ export const heroSlides: HeroSlide[] = [
     bullets: ['Centralized lighting management', 'Remote monitoring and control', 'Real-time operational visibility'],
     art: 'lighting',
     photo: 'street-lamp-dusk.jpg',
+    focus: '12% center',
     bg: 'night',
     cta: { label: 'Explore Infrastructure', href: '/infrastructure' },
   },

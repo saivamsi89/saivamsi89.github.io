@@ -111,7 +111,8 @@ Analytics events: `contact_enquiry`, `bom_upload` (successful submissions), `quo
 
 Open **`/styleguide`** on the running site to see every token and component as it renders. The page is not linked anywhere and isn't indexed.
 
-- **Fonts:** Space Grotesk for headlines, Inter for body text, JetBrains Mono for labels and numbers.
+- **Theme:** warm corporate (white and cream surfaces, bright red accent, maroon and navy bands, square uppercase buttons). Token names `signal-*` are the red accent, `ink-*` the maroon darks, `copper-*` the sand highlight.
+- **Fonts:** Poppins for headlines and body text, JetBrains Mono for technical labels.
 - **Colour, by role:** use semantic tokens in markup, never palette shades for text, surfaces or lines:
   `text-fg` (headings), `text-fg-body`, `text-fg-muted`, `text-fg-subtle`, `text-fg-faint` (decorative only),
   `bg-surface`, `bg-surface-2`, `border-line`, `border-line-strong`, `text-accent` (links, eyebrows),
@@ -125,7 +126,7 @@ Open **`/styleguide`** on the running site to see every token and component as i
 - **Shape and size:** `rounded-control` (buttons, inputs), `rounded-card`, `rounded-panel`, `rounded-full`. Buttons are
   `btn` + `btn-primary | btn-outline | btn-copper | btn-ghost`, plus optional `btn-sm | btn-lg | btn-pill`.
   Fields: `field` (+ `field-sm`). Don't use `!important` utility overrides.
-- **Theme:** the header has a System / Light / Dark menu. "System" follows the device, including live changes.
+- **Light/dark:** follows the visitor's device setting. There is no manual switch.
 - **Accessibility:** every animation has a reduced-motion fallback. Windows High Contrast (forced colours) falls back to
   system colours, so gradient text and buttons stay visible.
 - **Performance:** off-screen banner slides and the sections below the scroll story use `content-visibility` (`.cv-auto`) so the browser skips rendering them until needed. Don't add it above sticky sections (it changes their position while scrolling). The two main fonts are preloaded to avoid layout shift.
@@ -164,7 +165,7 @@ Pages on every push to `main`. **A deploy only happens if the tests pass.** Chec
 
 
 
-- [ ] Replace the placeholder logo (`src/components/Logo.astro`, `public/favicon.svg`)
+- [x] Official logo in place (`src/assets/brand/nanofab-logo.jpg`, `public/favicon.png`); ask for an SVG and a square icon version
 - [ ] Set the real domain in `astro.config.mjs` (`site`) and `public/robots.txt`
 - [ ] Set `PUBLIC_FORM_ENDPOINT` (and analytics, if wanted)
 - [ ] Fill `site.legal` (CIN, registered address, Grievance Officer) and contact details
