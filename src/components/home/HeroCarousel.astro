@@ -54,6 +54,22 @@ const DURATION = 6500;
     </div>
   </div>
 
+  <!-- Template for banners added in the dashboard -->
+  <template id="hero-template">
+    <div class="slide relative isolate w-full shrink-0" style="background: var(--grad-showcase)" role="group" aria-roledescription="slide">
+      <div class="bg-grid absolute inset-0 -z-10 opacity-25" aria-hidden="true"></div>
+      <div class="slide-photo absolute inset-y-0 right-0 -z-10 hidden w-[74%] lg:block" aria-hidden="true"><img alt="" class="size-full object-cover" /></div>
+      <div class="container-x slide-inner grid items-center gap-8 lg:grid-cols-12">
+        <div class="slide-copy lg:col-span-6">
+          <h2 class="mt-4 font-display text-[2.3rem] leading-[1.05] font-bold tracking-[-0.035em] text-white sm:text-5xl lg:text-[3.2rem]"><span class="d-title block"></span><span class="d-accent accent block"></span></h2>
+          <ul class="d-bullets mt-7 space-y-3"></ul>
+          <div class="mt-8"><a class="d-cta btn btn-primary btn-lg btn-pill"><span></span> <Icon name="ChevronRight" class="size-4" /></a></div>
+        </div>
+        <div class="slide-art relative overflow-hidden rounded-panel lg:hidden" aria-hidden="true"><img alt="" class="size-full object-cover" /></div>
+      </div>
+    </div>
+  </template>
+
   <!-- Fixed layer: slide controls -->
   <div class="hero-ctrl pointer-events-none lg:absolute lg:inset-x-0 lg:bottom-0">
     <div class="container-x pointer-events-auto pt-2 pb-6 lg:pt-0 lg:pb-8">
@@ -84,7 +100,7 @@ const DURATION = 6500;
   .slide-inner { padding-top: 8.5rem; padding-bottom: 2rem; }
   /* Photo slides: the image fades into the slide's gradient from the left and the bottom */
   .slide-photo { mask-image: linear-gradient(to right, transparent 0%, black 46%); }
-  .slide-photo::after { content: ''; position: absolute; inset: 0; background: linear-gradient(180deg, rgb(26 0 10 / .25), rgb(26 0 10 / .1) 45%, rgb(26 0 10 / .85)); }
+  .slide-photo::after { content: ''; position: absolute; inset: 0; background: linear-gradient(180deg, rgb(10 2 32 / .25), rgb(10 2 32 / .1) 45%, rgb(10 2 32 / .85)); }
   .slide-art { height: 18rem; }
   @media (min-width: 640px) { .slide-art { height: 24rem; } }
   @media (min-width: 1024px) {
@@ -104,7 +120,7 @@ const DURATION = 6500;
 
   /* controls */
   .ctrl-btn { display: inline-flex; align-items: center; justify-content: center; border-radius: 999px; border: 1px solid rgb(255 255 255 / .2);
-    background: rgb(26 0 10 / .35); color: var(--color-fg); backdrop-filter: blur(6px); transition: background .2s, border-color .2s, color .2s; }
+    background: rgb(10 2 32 / .35); color: var(--color-fg); backdrop-filter: blur(6px); transition: background .2s, border-color .2s, color .2s; }
   .ctrl-btn:hover { background: rgb(255 255 255 / .15); }
   .ctrl-btn[hidden] { display: none; }
   @media (max-width: 1023px) { .hero-prev, .hero-next { display: none; } }
@@ -119,8 +135,47 @@ const DURATION = 6500;
 </style>
 
 <script>
+  import { loadContent, safeImage, safeLink, type DynContent } from '@/lib/dynamic';
+
+  /** Add banners uploaded in the dashboard (and optionally drop the built-in ones). */
+  function addDashboardSlides(hero: HTMLElement, content: DynContent | null) {
+    const items = (content?.slides ?? []).filter((s) => safeImage(s.image));
+    if (!items.length) return;
+    const track = hero.querySelector('.track')!, list = hero.querySelector('[role=tablist]')!;
+    const tpl = hero.querySelector<HTMLTemplateElement>('#hero-template')!;
+    const tabTpl = list.querySelector('.hero-tab')!.cloneNode(true) as HTMLElement;
+    if (!content!.showBuiltinSlides) { track.replaceChildren(); list.replaceChildren(); }
+    items.forEach((d) => {
+      const el = tpl.content.firstElementChild!.cloneNode(true) as HTMLElement;
+      el.querySelectorAll('img').forEach((img) => (img.src = safeImage(d.image)));
+      el.querySelector('.d-title')!.textContent = d.title;
+      el.querySelector('.d-accent')!.textContent = d.accent;
+      d.bullets.forEach((b) => {
+        const li = tpl.content.ownerDocument.createElement('li'), dot = document.createElement('span');
+        li.className = 'flex items-start gap-3 text-base text-fg-body sm:text-lg'; dot.className = 'mt-2.5 size-1.5 shrink-0 rounded-full bg-signal-400';
+        li.append(dot, b); el.querySelector('.d-bullets')!.append(document.importNode(li, true));
+      });
+      const cta = el.querySelector<HTMLAnchorElement>('.d-cta')!;
+      cta.href = safeLink(d.buttonLink); cta.querySelector('span')!.textContent = d.buttonLabel || 'Learn More';
+      track.append(el);
+      const tab = tabTpl.cloneNode(true) as HTMLElement; tab.title = d.title; list.append(tab);
+    });
+    const all = [...track.querySelectorAll<HTMLElement>(':scope > .slide')];
+    all.forEach((s, i) => {
+      s.dataset.slide = String(i); s.setAttribute('aria-label', `${i + 1} of ${all.length}`);
+      s.classList.toggle('is-active', i === 0); s.inert = i !== 0;
+    });
+    list.querySelectorAll<HTMLElement>('.hero-tab').forEach((t, i) => {
+      t.dataset.go = String(i); t.setAttribute('aria-selected', String(i === 0)); t.setAttribute('aria-label', `${i + 1}: ${t.title}`);
+    });
+    // exactly one h1: the first slide's headline
+    const h = all[0].querySelector('h2');
+    if (h && !track.querySelector('h1')) { const h1 = document.createElement('h1'); h1.className = h.className; for (const a of h.attributes) h1.setAttribute(a.name, a.value); h1.append(...h.childNodes); h.replaceWith(h1); }
+  }
+
   const hero = document.querySelector<HTMLElement>('.hero');
-  if (hero) {
+  if (hero) loadContent().then((content) => {
+    addDashboardSlides(hero, content);
     const track = hero.querySelector<HTMLElement>('.track')!;
     const slides = [...hero.querySelectorAll<HTMLElement>('.slide')];
     const tabs = [...hero.querySelectorAll<HTMLButtonElement>('.hero-tab')];
@@ -220,5 +275,5 @@ const DURATION = 6500;
     document.addEventListener('visibilitychange', schedule);
     go(0, false);
     if (!loaded) addEventListener('load', () => { loaded = true; schedule(); }, { once: true });
-  }
+  });
 </script>

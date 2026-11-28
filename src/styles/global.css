@@ -13,41 +13,41 @@
   --font-display: "Poppins", ui-sans-serif, system-ui, sans-serif;
 
   /* Deep navy — substrate */
-  --color-ink-950: #1a000a;
-  --color-ink-900: #2a0112;
-  --color-ink-800: #45091f;
-  --color-ink-700: #5f1332;
-  --color-ink-600: #7c2a49;
+  --color-ink-950: #10042a;
+  --color-ink-900: #180839;
+  --color-ink-800: #260f54;
+  --color-ink-700: #35176d;
+  --color-ink-600: #4a278c;
 
   /* Signal cyan — primary accent */
-  --color-signal-300: #ff8a9b;
-  --color-signal-400: #ff4d66;
-  --color-signal-500: #e31837;
-  --color-signal-600: #c8102e;
-  --color-signal-700: #a50d27;
+  --color-signal-300: #7ee881;
+  --color-signal-400: #2fd932;
+  --color-signal-500: #0ac30d;
+  --color-signal-600: #09a60b;
+  --color-signal-700: #087a0a;
 
   /* Copper — secondary accent (PCB traces) */
-  --color-copper-300: #f3dcc0;
-  --color-copper-400: #e8b87a;
-  --color-copper-500: #d59a52;
-  --color-copper-600: #b57c34;
-  --color-copper-700: #7a4a12;
+  --color-copper-300: #c9f7d6;
+  --color-copper-400: #7fe3a0;
+  --color-copper-500: #3fbf6e;
+  --color-copper-600: #279455;
+  --color-copper-700: #0f5f36;
 
   /* ---------- Semantic tokens (light theme values) ----------
      Use these role-based names in markup, never raw palette shades for text,
      surfaces or lines. Dark theme and dark sections override them below. */
   --color-surface: #ffffff;        /* page background, cards */
-  --color-surface-2: #f6f2ea;      /* warm cream bands, insets */
-  --color-fg: #17181a;             /* headings, strong text */
-  --color-fg-body: #2c2c2c;        /* body copy */
-  --color-fg-muted: #47474b;       /* secondary text */
-  --color-fg-subtle: #626266;      /* captions, meta */
-  --color-fg-faint: #d6cfc2;       /* decorative only (watermarks, placeholders) */
-  --color-line: #e5dfd3;           /* borders, dividers */
-  --color-line-strong: #cfc7b8;    /* form borders, outline buttons */
-  --color-accent: #bd0f2b;         /* links, eyebrows (AA on white and cream) */
-  --color-accent-strong: #8c0b20;  /* link hover */
-  --color-accent-2: #5f0229;       /* maroon labels, step numbers */
+  --color-surface-2: #f4f5f9;      /* warm cream bands, insets */
+  --color-fg: #11052b;             /* headings, strong text */
+  --color-fg-body: #2b2545;        /* body copy */
+  --color-fg-muted: #45415c;       /* secondary text */
+  --color-fg-subtle: #605c78;      /* captions, meta */
+  --color-fg-faint: #d2d5e1;       /* decorative only (watermarks, placeholders) */
+  --color-line: #e1e3ec;           /* borders, dividers */
+  --color-line-strong: #c6c9d8;    /* form borders, outline buttons */
+  --color-accent: #077209;         /* links, eyebrows (AA on white and cream) */
+  --color-accent-strong: #055507;  /* link hover */
+  --color-accent-2: #1a0b45;       /* maroon labels, step numbers */
   --color-danger: #c00018;         /* errors, invalid fields */
 
   /* Radii: control → card → panel → pill */
@@ -63,14 +63,14 @@
 
 /* ---------- Brand gradients (one source of truth) ---------- */
 :root {
-  --grad-hero: radial-gradient(ellipse at 75% 45%, #8c0f3a 0%, #4a031f 42%, #1a000a 100%);
-  --grad-showcase: radial-gradient(ellipse at 72% 55%, #a8123c 0%, #5f0229 42%, #1a000a 100%);
-  --grad-deep: radial-gradient(ellipse at 75% 50%, #7a0a33 0%, #45041f 48%, #1a000a 100%);
-  --grad-ocean: radial-gradient(ellipse at 70% 45%, #7a0a33 0%, #45041f 45%, #1a000a 100%);
-  --grad-teal: radial-gradient(ellipse at 72% 50%, #8c0f3a 0%, #4a031f 45%, #1a000a 100%);
-  --grad-night: radial-gradient(ellipse at 70% 30%, #5f0229 0%, #33061a 50%, #14000a 100%);
-  --grad-mission: radial-gradient(ellipse at 85% 15%, #a8123c 0%, #5f0229 55%, #1a000a 100%);
-  --grad-vision: radial-gradient(ellipse at 85% 15%, #7a4a12 0%, #3d1a12 50%, #1a000a 100%);
+  --grad-hero: radial-gradient(ellipse at 75% 45%, #5a22b4 0%, #2e106c 40%, #12052b 100%);
+  --grad-showcase: radial-gradient(ellipse at 72% 55%, #672fc6 0%, #331171 42%, #12052b 100%);
+  --grad-deep: radial-gradient(ellipse at 75% 50%, #4c1c9c 0%, #240c57 48%, #12052b 100%);
+  --grad-ocean: radial-gradient(ellipse at 70% 45%, #5a22b4 0%, #2b0e64 45%, #12052b 100%);
+  --grad-teal: radial-gradient(ellipse at 72% 50%, #6820aa 0%, #310e57 45%, #14042a 100%);
+  --grad-night: radial-gradient(ellipse at 70% 30%, #411a82 0%, #1e0846 50%, #0d0322 100%);
+  --grad-mission: radial-gradient(ellipse at 85% 15%, #672fc6 0%, #290d5e 55%, #12052b 100%);
+  --grad-vision: radial-gradient(ellipse at 85% 15%, #0f5a2e 0%, #0b2b2a 50%, #0a0220 100%);
 }
 @utility bg-grad-hero { background: var(--grad-hero); }
 @utility bg-grad-showcase { background: var(--grad-showcase); }
@@ -90,53 +90,53 @@
 
 :root[data-theme='dark'] {
   color-scheme: dark;
-  --color-surface: #17181a;
-  --color-surface-2: #111214;
-  --color-fg: #f6f2ea;
-  --color-fg-body: #dcd8d0;
-  --color-fg-muted: #bdb9b2;
-  --color-fg-subtle: #9b978f;
-  --color-fg-faint: #34353a;
-  --color-line: #2e3034;
-  --color-line-strong: #45474d;
-  --color-accent: #ff6b7f;
-  --color-accent-strong: #ff9dab;
-  --color-accent-2: #e8b87a;
+  --color-surface: #120b29;
+  --color-surface-2: #0b061b;
+  --color-fg: #f4f5f9;
+  --color-fg-body: #dcdbe8;
+  --color-fg-muted: #bcbad0;
+  --color-fg-subtle: #9a97b4;
+  --color-fg-faint: #322a54;
+  --color-line: #2a2349;
+  --color-line-strong: #403766;
+  --color-accent: #52df55;
+  --color-accent-strong: #9bee9d;
+  --color-accent-2: #9ee8b4;
   --color-danger: #ff8080;
 }
 /* The header is always white (the logo needs a white background), in both themes. */
 #site-header {
   color-scheme: light;
   --color-surface: #ffffff;
-  --color-surface-2: #f6f2ea;
-  --color-fg: #17181a;
-  --color-fg-body: #2c2c2c;
-  --color-fg-muted: #47474b;
-  --color-fg-subtle: #626266;
-  --color-fg-faint: #d6cfc2;
-  --color-line: #e5dfd3;
-  --color-line-strong: #cfc7b8;
-  --color-accent: #bd0f2b;
-  --color-accent-strong: #8c0b20;
-  --color-accent-2: #5f0229;
+  --color-surface-2: #f4f5f9;
+  --color-fg: #11052b;
+  --color-fg-body: #2b2545;
+  --color-fg-muted: #45415c;
+  --color-fg-subtle: #605c78;
+  --color-fg-faint: #d2d5e1;
+  --color-line: #e1e3ec;
+  --color-line-strong: #c6c9d8;
+  --color-accent: #077209;
+  --color-accent-strong: #055507;
+  --color-accent-2: #1a0b45;
   --color-danger: #c00018;
 }
 .on-dark {
-  --color-surface: #2a0112;
-  --color-surface-2: #45091f;
+  --color-surface: #11052b;
+  --color-surface-2: #1d0f45;
   --color-fg: #ffffff;
-  --color-fg-body: #f1e9ea;
-  --color-fg-muted: #dccdd1;
-  --color-fg-subtle: #bda3ab;
+  --color-fg-body: #e9e8f3;
+  --color-fg-muted: #cfcce1;
+  --color-fg-subtle: #aaa5c6;
   --color-fg-faint: rgb(255 255 255 / 0.12);
   --color-line: rgb(255 255 255 / 0.1);
   --color-line-strong: rgb(255 255 255 / 0.25);
-  --color-accent: #ff8a9b;
-  --color-accent-strong: #ffc2cb;
-  --color-accent-2: #e8b87a;
+  --color-accent: #7ee881;
+  --color-accent-strong: #c4f5c5;
+  --color-accent-2: #9ee8b4;
 }
 /* Dark sections sit on a slightly deeper shade in dark theme so they still read as bands */
-:root[data-theme='dark'] .on-dark.bg-ink-900 { background-color: #1f000d; }
+:root[data-theme='dark'] .on-dark.bg-ink-900 { background-color: #12052b; }
 :root[data-theme='dark'] mark { background: #4a3a12; color: #fde68a; }
 :root[data-theme='dark'] .bg-amber-50 { background: #2a2210; color: #fde68a; }
 :root[data-theme='dark'] .bg-emerald-50 { background: #0c2a1f; color: #a7f3d0; }
@@ -178,7 +178,7 @@
     @apply inline-flex items-center justify-center gap-2 rounded-control px-6 py-3 text-xs font-semibold tracking-[0.06em] uppercase transition
       duration-150 focus-visible:outline-2 focus-visible:outline-offset-2;
   }
-  .btn-primary { @apply bg-signal-500 text-white hover:bg-signal-600 shadow-[0_8px_24px_-8px] shadow-signal-500/60; }
+  .btn-primary { @apply bg-signal-500 text-ink-950 hover:bg-signal-400 shadow-[0_8px_24px_-8px] shadow-signal-500/60; }
   .btn-copper { @apply bg-copper-500 text-white hover:bg-copper-400; }
   .btn-outline { @apply border border-line-strong text-fg hover:border-fg hover:bg-fg hover:text-surface; }
   .on-dark .btn-outline { @apply hover:border-white hover:bg-white hover:text-ink-950; }
@@ -231,8 +231,8 @@
   }
   .bg-grid-light {
     background-image:
-      linear-gradient(to right, rgb(23 24 26 / 0.05) 1px, transparent 1px),
-      linear-gradient(to bottom, rgb(23 24 26 / 0.05) 1px, transparent 1px);
+      linear-gradient(to right, rgb(17 5 43 / 0.05) 1px, transparent 1px),
+      linear-gradient(to bottom, rgb(17 5 43 / 0.05) 1px, transparent 1px);
     background-size: 44px 44px;
   }
   .mask-fade { mask-image: radial-gradient(ellipse at center, black 30%, transparent 75%); }
@@ -256,7 +256,7 @@
 [data-spotlight] { position: relative; isolation: isolate; }
 [data-spotlight]::after {
   content: ""; position: absolute; inset: 0; z-index: -1; pointer-events: none; opacity: 0; transition: opacity .3s;
-  background: radial-gradient(520px circle at var(--mx, 50%) var(--my, 50%), rgb(255 77 102 / 0.10), transparent 60%);
+  background: radial-gradient(520px circle at var(--mx, 50%) var(--my, 50%), rgb(47 217 50 / 0.10), transparent 60%);
 }
 [data-spotlight]:hover::after { opacity: 1; }
 
@@ -296,3 +296,6 @@
    needed: inactive banner slides and below-the-fold sections. */
 .cv-auto { content-visibility: auto; contain-intrinsic-size: auto 900px; }
 
+
+/* Large dark bands: logo navy with a soft purple sweep */
+section.on-dark.bg-ink-900 { background-image: linear-gradient(135deg, var(--color-ink-900) 35%, #2d1068 100%); }

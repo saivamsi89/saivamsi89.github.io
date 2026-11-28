@@ -111,7 +111,7 @@ Analytics events: `contact_enquiry`, `bom_upload` (successful submissions), `quo
 
 Open **`/styleguide`** on the running site to see every token and component as it renders. The page is not linked anywhere and isn't indexed.
 
-- **Theme:** warm corporate (white and cream surfaces, bright red accent, maroon and navy bands, square uppercase buttons). Token names `signal-*` are the red accent, `ink-*` the maroon darks, `copper-*` the sand highlight.
+- **Theme:** matches the logo (white surfaces, logo navy with a soft purple glow on dark bands, logo green `#0ac30d` accent with navy text on buttons, square uppercase buttons). Token names `signal-*` are the logo green, `ink-*` the logo navy, `copper-*` a mint highlight.
 - **Fonts:** Poppins for headlines and body text, JetBrains Mono for technical labels.
 - **Colour, by role:** use semantic tokens in markup, never palette shades for text, surfaces or lines:
   `text-fg` (headings), `text-fg-body`, `text-fg-muted`, `text-fg-subtle`, `text-fg-faint` (decorative only),
@@ -148,7 +148,14 @@ Open **`/styleguide`** on the running site to see every token and component as i
 - Lighthouse (mobile, 26 Nov 2026): accessibility, best practices and SEO **100**; performance in the 90s, measured
   locally without compression.
 
-## Deployment (GitHub Pages)
+## Hosting on Bluehost (dashboard, forms, visitor email)
+
+The production site is intended for Bluehost: see **[DEPLOY-BLUEHOST.md](DEPLOY-BLUEHOST.md)**. `npm run package` builds
+the site plus the PHP dashboard and form handler in `server/`. Test the package on Apache + PHP with
+`npm run package && tests/bluehost_check.sh` (needs Docker). The dashboard and cookie email box exist only in this build,
+not in `npm run preview`.
+
+## Deployment (GitHub Pages preview)
 
 `.github/workflows/deploy.yml` builds the site, runs the functional and accessibility tests, and deploys to GitHub
 Pages on every push to `main`. **A deploy only happens if the tests pass.** Check progress in the repository's

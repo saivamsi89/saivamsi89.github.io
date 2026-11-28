@@ -366,3 +366,15 @@ test('pointing at a banner progress segment shows that slide and holds it', asyn
   await page.mouse.move(5, 400);
   await expect(page.locator('.slide[data-slide="0"]:not([data-clone])')).toHaveClass(/is-active/, { timeout: 9000 });
 });
+
+test('clicking an industry on the home page opens that industry', async ({ page }) => {
+  for (const i of [2, 6]) {
+    await page.goto('/');
+    const link = page.locator('.panels a').nth(i);
+    const name = (await link.locator('h3').textContent())!.trim();
+    await link.click();
+    await expect(page).toHaveURL(new RegExp(`/industries/?#ind-${i}$`));
+    await expect(page.locator(`#ind-${i} h2`)).toHaveText(name);
+    await expect(page.locator(`#ind-${i}`)).toBeInViewport();
+  }
+});

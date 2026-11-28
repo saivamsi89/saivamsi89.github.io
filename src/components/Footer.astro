@@ -6,7 +6,8 @@ import { getCaseStudies, getTeam } from '@/lib/content';
 const hidden = new Set<string>();
 if (!(await getCaseStudies()).length) hidden.add('/case-studies');
 if (!(await getTeam()).length) hidden.add('/team');
-const consentEnabled = (import.meta.env.PUBLIC_ANALYTICS ?? '').toLowerCase() === 'ga4' && !!import.meta.env.PUBLIC_GA4_ID;
+const consentEnabled = ((import.meta.env.PUBLIC_ANALYTICS ?? '').toLowerCase() === 'ga4' && !!import.meta.env.PUBLIC_GA4_ID)
+  || (import.meta.env.PUBLIC_VISITOR_EMAIL === '1' && !!import.meta.env.PUBLIC_FORM_ENDPOINT);
 const footerLinks = { ...allLinks, company: allLinks.company.filter((l) => !hidden.has(l.href)) };
 const year = new Date().getFullYear();
 ---

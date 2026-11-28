@@ -32,6 +32,26 @@ const willInclude = [
     </div>
   </PageHero>
 
+  <!-- Products added in the dashboard -->
+  <section id="dyn-products" class="section pb-0" hidden>
+    <div class="container-x">
+      <p class="eyebrow">Our products</p>
+      <h2 class="h-section mt-3">Browse the range</h2>
+      <div class="dyn-grid mt-10 grid gap-6 sm:grid-cols-2 lg:grid-cols-3"></div>
+    </div>
+    <template id="product-template">
+      <article class="card card-hover flex flex-col overflow-hidden p-0">
+        <div class="aspect-[4/3] bg-surface-2"><img alt="" loading="lazy" class="size-full object-cover" /></div>
+        <div class="flex flex-1 flex-col p-6">
+          <p class="p-cat font-mono text-xs tracking-wider text-accent uppercase"></p>
+          <h3 class="p-name mt-2 text-lg"></h3>
+          <p class="p-desc mt-2 text-sm whitespace-pre-line text-fg-muted"></p>
+          <div class="mt-auto pt-5"><a class="p-cta btn btn-primary btn-sm">Product Enquiry</a></div>
+        </div>
+      </article>
+    </template>
+  </section>
+
   <section class="section">
     <div class="container-x">
       {products.length > 0 ? (
@@ -111,6 +131,24 @@ const willInclude = [
   .chip.is-on { background: var(--color-fg); color: var(--color-surface); border-color: var(--color-fg); }
 </style>
 <script>
+  import { loadContent, safeImage } from '@/lib/dynamic';
+  loadContent().then((content) => {
+    const items = (content?.products ?? []).filter((p) => safeImage(p.image));
+    const section = document.getElementById('dyn-products');
+    if (!section || !items.length) return;
+    const tpl = document.getElementById('product-template') as HTMLTemplateElement;
+    for (const p of items) {
+      const el = document.importNode(tpl.content.firstElementChild!, true) as HTMLElement;
+      const img = el.querySelector('img')!; img.src = safeImage(p.image); img.alt = p.name;
+      el.querySelector('.p-cat')!.textContent = p.category;
+      el.querySelector('.p-name')!.textContent = p.name;
+      el.querySelector('.p-desc')!.textContent = p.description;
+      el.querySelector<HTMLAnchorElement>('.p-cta')!.href = `/contact?${new URLSearchParams({ service: 'Products & Quotation', product: p.name })}`;
+      section.querySelector('.dyn-grid')!.append(el);
+    }
+    section.hidden = false;
+  });
+
   const filters = document.getElementById('filters');
   filters?.addEventListener('click', (e) => {
     const btn = (e.target as HTMLElement).closest<HTMLButtonElement>('[data-cat]');

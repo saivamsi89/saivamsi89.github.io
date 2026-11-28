@@ -78,7 +78,7 @@ const maxMb = 10;
           <legend class="field-label">Also interested in</legend>
           <div class="mt-1 flex flex-wrap gap-x-6 gap-y-2 text-sm">
             {['PCB Fabrication', 'PCB Assembly', 'Stencil', 'Enclosure'].map((o) => (
-              <label class="inline-flex items-center gap-2"><input type="checkbox" name="also" value={o} class="size-4 rounded border-line-strong accent-signal-600" />{o}</label>
+              <label class="inline-flex items-center gap-2"><input type="checkbox" name="also[]" value={o} class="size-4 rounded border-line-strong accent-signal-600" />{o}</label>
             ))}
           </div>
         </fieldset>

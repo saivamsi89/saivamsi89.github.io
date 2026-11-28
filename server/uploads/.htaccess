@@ -1,0 +1,8 @@
+# Only images may be served from here; scripts can never run.
+Require all denied
+<FilesMatch "\.(webp|jpg|png)$">
+  Require all granted
+</FilesMatch>
+<IfModule mod_php.c>
+  php_flag engine off
+</IfModule>
